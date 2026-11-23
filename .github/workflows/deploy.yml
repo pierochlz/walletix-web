@@ -1,0 +1,55 @@
+# CI/CD: on every push to main, run the tests, build Angular and publish it on GitHub Pages
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit and security tests
+        run: npx ng test --watch=false
+
+      # The site lives at https://pierochlz.github.io/walletix-web/ so the base href is /walletix-web/
+      - name: Build (production)
+        run: npx ng build --configuration production --base-href /walletix-web/
+
+      # GitHub Pages does not know Angular routes: 404.html = index.html makes /dashboard, /expenses... work on reload
+      - name: SPA fallback
+        run: cp dist/walletix-web/browser/index.html dist/walletix-web/browser/404.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/walletix-web/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

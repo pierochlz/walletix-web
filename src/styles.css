@@ -1,0 +1,82 @@
+/* Global styles */
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--mat-sys-primary);
+}
+
+/* Accessibility: "skip to content" link, visible only when it receives keyboard focus */
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -48px;
+  z-index: 1000;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  transition: top 0.15s;
+}
+.skip-link:focus {
+  top: 8px;
+}
+
+/* Visible focus for keyboard users */
+:focus-visible {
+  outline: 3px solid var(--mat-sys-tertiary);
+  outline-offset: 2px;
+}
+
+.app-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+  padding: 16px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-small);
+}
+
+button.danger {
+  background: var(--mat-sys-error) !important;
+  color: var(--mat-sys-on-error) !important;
+}
+
+/* Phones: the tables of .responsive-table become cards with "label: value" lines.
+   It is global because Material creates <thead>/<tbody> itself (outside the component styles). */
+@media (max-width: 700px) {
+  .responsive-table,
+  .responsive-table tbody {
+    display: block;
+    width: 100%;
+  }
+  .responsive-table thead {
+    display: none;
+  }
+  .responsive-table tr.mat-mdc-row {
+    display: block;
+    height: auto;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+  .responsive-table td.mat-mdc-cell {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border: none;
+    min-height: 32px;
+    text-align: right;
+  }
+  .responsive-table td.mat-mdc-cell[data-label]::before {
+    content: attr(data-label);
+    font-weight: 500;
+    text-align: left;
+    color: var(--mat-sys-on-surface-variant);
+  }
+  .responsive-table td.actions {
+    justify-content: flex-end;
+  }
+}

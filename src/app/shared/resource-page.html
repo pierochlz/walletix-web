@@ -1,0 +1,86 @@
+<section class="page" [attr.aria-labelledby]="'title-' + config().idKey">
+  <header class="page-header">
+    <h1 [id]="'title-' + config().idKey">
+      <mat-icon aria-hidden="true">{{ config().icon }}</mat-icon>
+      {{ config().titleKey | t }}
+    </h1>
+    @if (canEdit()) {
+      <button mat-flat-button (click)="openForm()">
+        <mat-icon aria-hidden="true">add</mat-icon>
+        {{ 'form.new' | t }}
+      </button>
+    }
+  </header>
+
+  @if (!canEdit() && config().noteKey) {
+    <p class="note" role="note">{{ config().noteKey! | t }}</p>
+  }
+
+  <mat-form-field appearance="outline" class="search">
+    <mat-label>{{ 'form.search' | t }}</mat-label>
+    <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+    <input matInput (input)="applyFilter($event)" />
+  </mat-form-field>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
+  }
+  @if (loadError()) {
+    <p class="api-error" role="alert">{{ loadError() }}</p>
+  }
+
+  <div class="table-wrap mat-elevation-z1">
+    <table mat-table class="responsive-table" [dataSource]="dataSource" matSort [attr.aria-label]="config().titleKey | t">
+      @for (field of tableFields(); track field.key) {
+        <ng-container [matColumnDef]="field.key">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ field.label | t }}</th>
+          <td mat-cell *matCellDef="let row" [attr.data-label]="field.label | t">
+            @switch (field.format) {
+              @case ('currency') {
+                {{ row[field.key] | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale() }}
+              }
+              @case ('date') {
+                {{ row[field.key] | date: 'mediumDate' : 'UTC' : i18n.locale() }}
+              }
+              @case ('bool') {
+                <mat-icon [attr.aria-label]="(row[field.key] ? 'common.yes' : 'common.no') | t">
+                  {{ row[field.key] ? 'check_circle' : 'remove' }}
+                </mat-icon>
+              }
+              @case ('option') {
+                {{ optionLabel(field, row[field.key]) }}
+              }
+              @case ('color') {
+                <span class="color-dot" [style.background]="row[field.key]" aria-hidden="true"></span>
+                {{ row[field.key] }}
+              }
+              @default {
+                {{ row[field.key] }}
+              }
+            }
+          </td>
+        </ng-container>
+      }
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'form.actions' | t }}</th>
+        <td mat-cell *matCellDef="let row" class="actions">
+          <button mat-icon-button (click)="openForm(row)" [attr.aria-label]="'form.edit' | t" [matTooltip]="'form.edit' | t">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button (click)="remove(row)" [attr.aria-label]="'form.delete' | t" [matTooltip]="'form.delete' | t">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns()"></tr>
+      <tr class="mat-mdc-row" *matNoDataRow>
+        <td class="mat-mdc-cell empty" [attr.colspan]="columns().length">{{ 'form.empty' | t }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25]" [pageSize]="10" showFirstLastButtons [attr.aria-label]="'paginator.itemsPerPage' | t" />
+</section>

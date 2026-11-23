@@ -1,0 +1,84 @@
+<app-auth-shell>
+  <mat-card appearance="outlined" class="auth-card wide">
+    <mat-card-header>
+      <mat-card-title><h1>{{ 'register.title' | t }}</h1></mat-card-title>
+      <mat-card-subtitle>{{ 'register.subtitle' | t }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <mat-card-content class="grid">
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{ 'register.name' | t }}</mat-label>
+          <input matInput formControlName="nombreUsuario" autocomplete="name" maxlength="50" required />
+          <mat-error>{{ 'form.required' | t }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'login.email' | t }}</mat-label>
+          <input matInput type="email" formControlName="correoUsuario" autocomplete="email" required />
+          <mat-error>{{ (form.controls.correoUsuario.hasError('email') ? 'form.email' : 'form.required') | t }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'login.password' | t }}</mat-label>
+          <input matInput type="password" formControlName="contrasenaUsuario" autocomplete="new-password" required />
+          <mat-error>{{ 'form.minLength' | t: { min: 6 } }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'register.phone' | t }}</mat-label>
+          <input matInput type="tel" inputmode="numeric" formControlName="telefonoUsuario" autocomplete="tel" maxlength="9" required />
+          <mat-error>{{ 'form.pattern' | t }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'register.birthdate' | t }}</mat-label>
+          <input matInput type="date" formControlName="fechaNacimientoUsuario" [max]="today" autocomplete="bday" required />
+          <mat-error>{{ 'form.required' | t }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'register.segment' | t }}</mat-label>
+          <mat-select formControlName="segmentoUsuario" required>
+            @for (segment of segments; track segment) {
+              <mat-option [value]="segment">{{ 'segment.' + segment | t }}</mat-option>
+            }
+          </mat-select>
+          <mat-error>{{ 'form.required' | t }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'register.balance' | t }}</mat-label>
+          <input matInput type="number" formControlName="saldoActualUsuario" min="0" step="any" required />
+          <mat-error>{{ 'form.min' | t: { min: 0 } }}</mat-error>
+        </mat-form-field>
+
+        <div class="full">
+          <mat-checkbox formControlName="acceptTerms" required>
+            {{ 'register.acceptTerms' | t }}
+            <a routerLink="/terms" target="_blank">{{ 'app.terms' | t }}</a>
+          </mat-checkbox>
+          @if (form.controls.acceptTerms.touched && form.controls.acceptTerms.invalid) {
+            <p class="api-error" role="alert">{{ 'form.required' | t }}</p>
+          }
+        </div>
+
+        @if (error()) {
+          <p class="api-error full" role="alert">{{ error() }}</p>
+        }
+      </mat-card-content>
+
+      @if (loading()) {
+        <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
+      }
+
+      <mat-card-actions>
+        <button mat-flat-button type="submit" class="full" [disabled]="loading()">{{ 'register.submit' | t }}</button>
+      </mat-card-actions>
+    </form>
+
+    <p class="switch">
+      {{ 'register.haveAccount' | t }} <a routerLink="/login">{{ 'login.submit' | t }}</a>
+    </p>
+  </mat-card>
+</app-auth-shell>

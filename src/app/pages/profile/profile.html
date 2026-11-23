@@ -1,0 +1,75 @@
+<h1>{{ 'profile.title' | t }}</h1>
+
+<div class="columns">
+  <mat-card appearance="outlined">
+    <form [formGroup]="form" (ngSubmit)="saveProfile()" novalidate>
+      <mat-card-content class="grid">
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{ 'register.name' | t }}</mat-label>
+          <input matInput formControlName="nombreUsuario" autocomplete="name" maxlength="50" required />
+          <mat-error>{{ 'form.required' | t }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{ 'login.email' | t }}</mat-label>
+          <input matInput type="email" formControlName="correoUsuario" autocomplete="email" required />
+          <mat-error>{{ 'form.email' | t }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'register.phone' | t }}</mat-label>
+          <input matInput type="tel" inputmode="numeric" formControlName="telefonoUsuario" maxlength="9" required />
+          <mat-error>{{ 'form.pattern' | t }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'register.birthdate' | t }}</mat-label>
+          <input matInput type="date" formControlName="fechaNacimientoUsuario" [max]="today" required />
+          <mat-error>{{ 'form.required' | t }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'register.segment' | t }}</mat-label>
+          <mat-select formControlName="segmentoUsuario" required>
+            @for (segment of segments; track segment) {
+              <mat-option [value]="segment">{{ 'segment.' + segment | t }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'register.balance' | t }}</mat-label>
+          <input matInput type="number" formControlName="saldoActualUsuario" min="0" step="any" required />
+          <mat-error>{{ 'form.min' | t: { min: 0 } }}</mat-error>
+        </mat-form-field>
+        @if (profileError()) {
+          <p class="api-error full" role="alert">{{ profileError() }}</p>
+        }
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-flat-button type="submit">{{ 'profile.save' | t }}</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title><h2>{{ 'profile.password' | t }}</h2></mat-card-title>
+    </mat-card-header>
+    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+      <mat-card-content>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'profile.current' | t }}</mat-label>
+          <input matInput type="password" formControlName="contrasenaActual" autocomplete="current-password" required />
+          <mat-error>{{ 'form.required' | t }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'profile.new' | t }}</mat-label>
+          <input matInput type="password" formControlName="contrasenaNueva" autocomplete="new-password" required />
+          <mat-error>{{ 'form.minLength' | t: { min: 6 } }}</mat-error>
+        </mat-form-field>
+        @if (passwordError()) {
+          <p class="api-error" role="alert">{{ passwordError() }}</p>
+        }
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-flat-button type="submit">{{ 'profile.changePassword' | t }}</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</div>

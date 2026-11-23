@@ -1,0 +1,65 @@
+<h2 mat-dialog-title>
+  {{ (isEdit ? 'form.edit' : 'form.new') | t }} · {{ data.config.titleKey | t }}
+</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <mat-dialog-content class="form-grid">
+    @for (field of fields; track field.key) {
+      @switch (field.type) {
+        @case ('select') {
+          <mat-form-field appearance="outline">
+            <mat-label>{{ field.label | t }}</mat-label>
+            <mat-select [formControlName]="field.key" [required]="!!field.required">
+              @for (option of field.options?.() ?? []; track option.value) {
+                <mat-option [value]="option.value">
+                  {{ field.translate ? (option.label | t) : option.label }}
+                </mat-option>
+              }
+            </mat-select>
+            <mat-error>{{ errorFor(field) }}</mat-error>
+          </mat-form-field>
+        }
+        @case ('checkbox') {
+          <mat-checkbox [formControlName]="field.key" class="full">{{ field.label | t }}</mat-checkbox>
+        }
+        @case ('color') {
+          <mat-form-field appearance="outline">
+            <mat-label>{{ field.label | t }}</mat-label>
+            <input matInput [formControlName]="field.key" placeholder="#22C55E" [required]="!!field.required" />
+            <span matTextSuffix class="swatch" [style.background]="form.get(field.key)?.value" aria-hidden="true"></span>
+            <mat-error>{{ errorFor(field) }}</mat-error>
+          </mat-form-field>
+        }
+        @default {
+          <mat-form-field appearance="outline">
+            <mat-label>{{ field.label | t }}</mat-label>
+            <input
+              matInput
+              [type]="field.type"
+              [formControlName]="field.key"
+              [required]="!!field.required"
+              [attr.min]="field.min ?? null"
+              [attr.max]="field.max ?? null"
+              [attr.maxlength]="field.maxLength ?? null"
+              [attr.step]="field.type === 'number' ? 'any' : null"
+            />
+            <mat-error>{{ errorFor(field) }}</mat-error>
+          </mat-form-field>
+        }
+      }
+    }
+
+    @if (error()) {
+      <p class="api-error full" role="alert">{{ error() }}</p>
+    }
+  </mat-dialog-content>
+
+  @if (saving()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Saving" />
+  }
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>{{ 'form.cancel' | t }}</button>
+    <button mat-flat-button type="submit" [disabled]="saving()">{{ 'form.save' | t }}</button>
+  </mat-dialog-actions>
+</form>
