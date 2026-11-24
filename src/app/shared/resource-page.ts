@@ -13,6 +13,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { filter, switchMap } from 'rxjs';
 import { apiErrorMessage } from '../core/api-error';
+import { categoryIcon } from '../core/category-icons';
 import { I18nService } from '../core/i18n/i18n.service';
 import { TranslatePipe } from '../core/i18n/translate.pipe';
 import { ConfirmDialog } from './confirm-dialog';
@@ -89,6 +90,8 @@ export class ResourcePage implements OnInit, AfterViewInit {
     this.dataSource.paginator?.firstPage();
   }
 
+  readonly iconOf = categoryIcon;
+
   // Text shown in a select-type column (the name of the category instead of its id)
   optionLabel(field: FieldDef, value: unknown): string {
     const option = field.options?.().find((o) => o.value === value);
@@ -98,7 +101,11 @@ export class ResourcePage implements OnInit, AfterViewInit {
 
   openForm(item: Record<string, any> | null = null): void {
     this.dialog
-      .open(ResourceFormDialog, { data: { config: this.config(), item }, width: '640px', maxWidth: '95vw' })
+      .open(ResourceFormDialog, {
+        data: { config: this.config(), item, initial: item ? undefined : this.config().initialValues?.() },
+        width: '640px',
+        maxWidth: '95vw',
+      })
       .afterClosed()
       .pipe(filter((result): result is { response: unknown } => !!result))
       .subscribe(({ response }) => this.changed('form.saved', response));

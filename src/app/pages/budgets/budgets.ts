@@ -11,6 +11,7 @@ import { filter, forkJoin, switchMap } from 'rxjs';
 import { apiErrorMessage } from '../../core/api-error';
 import { AuthService } from '../../core/auth.service';
 import { BudgetLevel, shiftMonth, summarizeMonth, WARNING_PERCENT } from '../../core/budget-summary';
+import { categoryIcon } from '../../core/category-icons';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { LookupStore } from '../../core/lookup.store';
@@ -116,7 +117,11 @@ export class BudgetsPage implements OnInit {
   }
 
   categoryColor(idCategoria: number): string {
-    return this.lookups.categories().find((c) => c.idCategoria === idCategoria)?.colorHexCategoria ?? 'transparent';
+    return this.lookups.categories().find((c) => c.idCategoria === idCategoria)?.colorHexCategoria ?? 'inherit';
+  }
+
+  categoryIconOf(idCategoria: number): string {
+    return categoryIcon(this.lookups.categories().find((c) => c.idCategoria === idCategoria)?.urlIconoCategoria);
   }
 
   levelIcon(level: BudgetLevel): string {

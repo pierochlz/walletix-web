@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../core/auth.service';
 import { LookupStore } from '../core/lookup.store';
+import { CATEGORY_COLORS, DEFAULT_CATEGORY_ICON } from '../core/category-icons';
 import { localToday } from '../core/dates';
 import { Expense } from '../core/models';
 import {
@@ -129,6 +130,8 @@ export class GoalsPage {
 })
 export class CategoriesPage {
   private lookups = inject(LookupStore);
+  private auth = inject(AuthService);
+  private readonly isAdmin = this.auth.isAdmin();
   readonly config: ResourceConfig = {
     titleKey: 'categories.title',
     icon: 'category',
@@ -136,15 +139,21 @@ export class CategoriesPage {
     service: inject(CategoryService),
     defaults: ownerDefaults(),
     afterChange: () => this.lookups.refresh(),
+    // Default categories belong to everyone: only an ADMIN can change them (the API checks it too)
+    canEditRow: (row) => this.isAdmin || !row['predeterminadoCategoria'],
+    lockedKey: 'categories.locked',
+    infoKey: this.isAdmin ? 'categories.infoAdmin' : 'categories.info',
+    initialValues: () => ({ urlIconoCategoria: DEFAULT_CATEGORY_ICON, colorHexCategoria: CATEGORY_COLORS[4].hex, tipoCategoria: 'gasto' }),
     fields: [
+      { key: 'urlIconoCategoria', label: 'categories.icon', type: 'icon', required: true, format: 'icon' },
       { key: 'nombreCategoria', label: 'categories.name', type: 'text', required: true, maxLength: 50 },
       {
         key: 'tipoCategoria', label: 'categories.type', type: 'select', required: true, translate: true, format: 'option',
         options: options('categoryType', ['gasto', 'ingreso']),
       },
-      { key: 'colorHexCategoria', label: 'categories.color', type: 'color', required: true, pattern: '^#[0-9A-Fa-f]{6}$', format: 'color' },
-      { key: 'urlIconoCategoria', label: 'categories.icon', type: 'url', required: true, maxLength: 100, inTable: false },
-      { key: 'predeterminadoCategoria', label: 'categories.default', type: 'checkbox', format: 'bool', inForm: false },
+      { key: 'colorHexCategoria', label: 'categories.color', type: 'color', required: true, pattern: '^#[0-9A-Fa-f]{6}$', inTable: false },
+      // Only an ADMIN sees the check to make a category visible to all users
+      { key: 'predeterminadoCategoria', label: 'categories.default', type: 'checkbox', format: 'bool', inForm: this.isAdmin },
     ],
   };
 }

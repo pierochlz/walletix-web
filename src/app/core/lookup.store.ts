@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { SelectOption } from '../shared/resource-config';
+import { categoryIcon } from './category-icons';
 import { Category, Merchant } from './models';
 import { CategoryService, MerchantService } from './resource.services';
 
@@ -24,7 +25,13 @@ export class LookupStore {
     this.merchantService.list().subscribe({ next: (list) => this.merchants.set(list), error: () => {} });
   }
 
+  // The selects show the icon of each category with its color
   private toOptions(list: Category[]): SelectOption[] {
-    return list.map((c) => ({ value: c.idCategoria, label: c.nombreCategoria }));
+    return list.map((c) => ({
+      value: c.idCategoria,
+      label: c.nombreCategoria,
+      icon: categoryIcon(c.urlIconoCategoria),
+      color: c.colorHexCategoria,
+    }));
   }
 }

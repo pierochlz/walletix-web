@@ -12,6 +12,9 @@
     }
   </header>
 
+  @if (config().infoKey) {
+    <p class="note" role="note">{{ config().infoKey! | t }}</p>
+  }
   @if (!canEdit() && config().noteKey) {
     <p class="note" role="note">{{ config().noteKey! | t }}</p>
   }
@@ -50,6 +53,11 @@
               @case ('option') {
                 {{ optionLabel(field, row[field.key]) }}
               }
+              @case ('icon') {
+                <mat-icon class="row-icon" [style.color]="row['colorHexCategoria']" aria-hidden="true">
+                  {{ iconOf(row[field.key]) }}
+                </mat-icon>
+              }
               @case ('color') {
                 <span class="color-dot" [style.background]="row[field.key]" aria-hidden="true"></span>
                 {{ row[field.key] }}
@@ -65,12 +73,18 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>{{ 'form.actions' | t }}</th>
         <td mat-cell *matCellDef="let row" class="actions">
-          <button mat-icon-button (click)="openForm(row)" [attr.aria-label]="'form.edit' | t" [matTooltip]="'form.edit' | t">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button (click)="remove(row)" [attr.aria-label]="'form.delete' | t" [matTooltip]="'form.delete' | t">
-            <mat-icon>delete</mat-icon>
-          </button>
+          @if (config().canEditRow?.(row) ?? true) {
+            <button mat-icon-button (click)="openForm(row)" [attr.aria-label]="'form.edit' | t" [matTooltip]="'form.edit' | t">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="remove(row)" [attr.aria-label]="'form.delete' | t" [matTooltip]="'form.delete' | t">
+              <mat-icon>delete</mat-icon>
+            </button>
+          } @else {
+            <!-- Read-only row: a lock instead of buttons that would only get a "no permission" error -->
+            <mat-icon class="locked" tabindex="0" [matTooltip]="(config().lockedKey ?? 'form.locked') | t"
+                      [attr.aria-label]="(config().lockedKey ?? 'form.locked') | t">lock</mat-icon>
+          }
         </td>
       </ng-container>
 

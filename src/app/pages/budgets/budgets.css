@@ -164,12 +164,8 @@ h3 {
   white-space: nowrap;
 }
 
-.color-dot {
+.category-icon {
   flex: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1px solid var(--mat-sys-outline-variant);
 }
 
 .status {

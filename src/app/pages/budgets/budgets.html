@@ -73,7 +73,9 @@
             <mat-card appearance="outlined" class="budget" [class]="'level-' + row.level">
               <div class="budget-head">
                 <span class="category">
-                  <span class="color-dot" [style.background]="categoryColor(row.budget.idCategoria)" aria-hidden="true"></span>
+                  <mat-icon class="category-icon" [style.color]="categoryColor(row.budget.idCategoria)" aria-hidden="true">
+                    {{ categoryIconOf(row.budget.idCategoria) }}
+                  </mat-icon>
                   <h3>{{ name }}</h3>
                 </span>
                 <span class="status">
@@ -136,7 +138,9 @@
           @for (item of s.unbudgeted; track item.idCategoria) {
             <li>
               <span class="category">
-                <span class="color-dot" [style.background]="categoryColor(item.idCategoria)" aria-hidden="true"></span>
+                <mat-icon class="category-icon" [style.color]="categoryColor(item.idCategoria)" aria-hidden="true">
+                  {{ categoryIconOf(item.idCategoria) }}
+                </mat-icon>
                 {{ categoryName(item.idCategoria) }}
               </span>
               <span>{{ item.spent | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</span>

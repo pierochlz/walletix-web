@@ -12,7 +12,32 @@
             <mat-select [formControlName]="field.key" [required]="!!field.required">
               @for (option of field.options?.() ?? []; track option.value) {
                 <mat-option [value]="option.value">
+                  @if (option.icon) {
+                    <mat-icon aria-hidden="true" [style.color]="option.color">{{ option.icon }}</mat-icon>
+                  }
                   {{ field.translate ? (option.label | t) : option.label }}
+                </mat-option>
+              }
+            </mat-select>
+            <mat-error>{{ errorFor(field) }}</mat-error>
+          </mat-form-field>
+        }
+        @case ('icon') {
+          <!-- Gallery: the user picks an icon instead of typing an image URL -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ field.label | t }}</mat-label>
+            <mat-select [formControlName]="field.key" [required]="!!field.required" panelClass="icon-panel">
+              <mat-select-trigger>
+                @let selected = form.get(field.key)?.value;
+                <span class="icon-choice">
+                  <mat-icon aria-hidden="true" [style.color]="currentColor()">{{ selected }}</mat-icon>
+                  {{ 'icon.' + selected | t }}
+                </span>
+              </mat-select-trigger>
+              @for (icon of icons; track icon) {
+                <mat-option [value]="icon">
+                  <mat-icon aria-hidden="true">{{ icon }}</mat-icon>
+                  {{ 'icon.' + icon | t }}
                 </mat-option>
               }
             </mat-select>
@@ -23,12 +48,26 @@
           <mat-checkbox [formControlName]="field.key" class="full">{{ field.label | t }}</mat-checkbox>
         }
         @case ('color') {
-          <mat-form-field appearance="outline">
-            <mat-label>{{ field.label | t }}</mat-label>
-            <input matInput [formControlName]="field.key" placeholder="#22C55E" [required]="!!field.required" />
-            <span matTextSuffix class="swatch" [style.background]="form.get(field.key)?.value" aria-hidden="true"></span>
-            <mat-error>{{ errorFor(field) }}</mat-error>
-          </mat-form-field>
+          <!-- Palette: the user clicks a color instead of typing a code like #22C55E -->
+          @let control = form.get(field.key)!;
+          <fieldset class="palette full">
+            <legend>{{ field.label | t }}{{ field.required ? ' *' : '' }}</legend>
+            <div class="swatches" role="radiogroup" [attr.aria-label]="field.label | t">
+              @for (color of paletteFor(control.value); track color.hex) {
+                @let chosen = isChosen(control.value, color.hex);
+                <button type="button" class="swatch-button" role="radio" [style.background]="color.hex"
+                        [class.chosen]="chosen" [attr.aria-checked]="chosen" [attr.aria-label]="color.name | t"
+                        (click)="control.setValue(color.hex); control.markAsTouched()">
+                  @if (chosen) {
+                    <mat-icon aria-hidden="true">check</mat-icon>
+                  }
+                </button>
+              }
+            </div>
+            @if (control.touched && control.invalid) {
+              <p class="palette-error" role="alert">{{ errorFor(field) }}</p>
+            }
+          </fieldset>
         }
         @default {
           <mat-form-field appearance="outline">

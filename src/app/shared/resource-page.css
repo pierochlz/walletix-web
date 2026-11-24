@@ -52,6 +52,17 @@ table {
   color: var(--mat-sys-on-surface-variant);
 }
 
+.row-icon {
+  vertical-align: middle;
+}
+
+/* Lock of the read-only rows, aligned with the edit / delete buttons */
+.locked {
+  margin: 0 12px;
+  vertical-align: middle;
+  color: var(--mat-sys-on-surface-variant);
+}
+
 .color-dot {
   display: inline-block;
   width: 14px;

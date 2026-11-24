@@ -4,11 +4,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { Observable } from 'rxjs';
 import { apiErrorMessage } from '../core/api-error';
+import { CATEGORY_COLORS, CATEGORY_ICONS, categoryIcon } from '../core/category-icons';
 import { I18nService } from '../core/i18n/i18n.service';
 import { TranslatePipe } from '../core/i18n/translate.pipe';
 import { FieldDef, ResourceConfig } from './resource-config';
@@ -30,6 +32,7 @@ export interface ResourceFormData {
     MatSelectModule,
     MatCheckboxModule,
     MatButtonModule,
+    MatIconModule,
     MatProgressBarModule,
     TranslatePipe,
   ],
@@ -46,6 +49,25 @@ export class ResourceFormDialog {
   readonly saving = signal(false);
   readonly error = signal<string | null>(null);
   readonly form = this.buildForm();
+  readonly icons = CATEGORY_ICONS;
+
+  // Palette of the color fields. A record saved before with another color shows it too, first.
+  paletteFor(value: unknown): { hex: string; name: string }[] {
+    const current = typeof value === 'string' ? value.toUpperCase() : '';
+    const known = CATEGORY_COLORS.some((c) => c.hex === current);
+    return /^#[0-9A-F]{6}$/.test(current) && !known
+      ? [{ hex: current, name: 'color.current' }, ...CATEGORY_COLORS]
+      : CATEGORY_COLORS;
+  }
+
+  isChosen(value: unknown, hex: string): boolean {
+    return typeof value === 'string' && value.toUpperCase() === hex;
+  }
+  // Color chosen in the same form (categories): the selected icon is shown with it
+  readonly currentColor = () => {
+    const color = this.form.get('colorHexCategoria')?.value;
+    return typeof color === 'string' && /^#[0-9A-Fa-f]{6}$/.test(color) ? color : null;
+  };
 
   constructor() {
     // When the user corrects the data, the API error of the previous attempt no longer applies
@@ -62,7 +84,9 @@ export class ResourceFormDialog {
       if (field.max !== undefined) validators.push(Validators.max(field.max));
       if (field.maxLength) validators.push(Validators.maxLength(field.maxLength));
       if (field.pattern) validators.push(Validators.pattern(field.pattern));
-      const initial = this.data.item?.[field.key] ?? this.data.initial?.[field.key] ?? (field.type === 'checkbox' ? false : null);
+      let initial = this.data.item?.[field.key] ?? this.data.initial?.[field.key] ?? (field.type === 'checkbox' ? false : null);
+      // Old categories have an image URL: the gallery starts on the same generic icon the table shows
+      if (field.type === 'icon') initial = categoryIcon(initial);
       controls[field.key] = new FormControl(initial, validators);
     }
     return new FormGroup(controls);
