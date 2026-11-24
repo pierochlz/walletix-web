@@ -67,7 +67,7 @@ export class ResourceFormDialog {
     if (!control?.errors) return '';
     if (control.errors['required']) return this.i18n.t('form.required');
     if (control.errors['min']) return this.i18n.t('form.min', { min: field.min ?? 0 });
-    if (control.errors['max']) return this.i18n.t('form.pattern');
+    if (control.errors['max']) return this.i18n.t('form.max', { max: field.max ?? 0 });
     return this.i18n.t('form.pattern');
   }
 

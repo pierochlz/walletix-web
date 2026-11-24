@@ -49,6 +49,7 @@ export const EN_US: Record<string, string> = {
   'form.required': 'This field is required',
   'form.email': 'Enter a valid email',
   'form.min': 'Minimum value: {min}',
+  'form.max': 'Maximum value: {max}',
   'form.minLength': 'At least {min} characters',
   'form.pattern': 'Invalid format',
   'form.save': 'Save',

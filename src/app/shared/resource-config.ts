@@ -16,6 +16,9 @@ export interface FieldDef {
   max?: number;
   maxLength?: number;
   pattern?: string;
+  // Date fields: limits of the date picker as "yyyy-MM-dd" (the API checks the same rule)
+  minDate?: () => string;
+  maxDate?: () => string;
   options?: () => SelectOption[]; // for selects
   translate?: boolean; // option labels are i18n keys
   inTable?: boolean; // default true

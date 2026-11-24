@@ -38,8 +38,8 @@
               [type]="field.type"
               [formControlName]="field.key"
               [required]="!!field.required"
-              [attr.min]="field.min ?? null"
-              [attr.max]="field.max ?? null"
+              [attr.min]="field.min ?? field.minDate?.() ?? null"
+              [attr.max]="field.max ?? field.maxDate?.() ?? null"
               [attr.maxlength]="field.maxLength ?? null"
               [attr.step]="field.type === 'number' ? 'any' : null"
             />

@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../core/auth.service';
 import { LookupStore } from '../core/lookup.store';
+import { localToday } from '../core/dates';
 import { Expense } from '../core/models';
 import {
   BudgetService,
@@ -18,6 +19,12 @@ import { ResourcePage } from '../shared/resource-page';
 const options = (prefix: string, values: string[]): (() => SelectOption[]) => () =>
   values.map((v) => ({ value: v, label: `${prefix}.${v}` }));
 const months = (): SelectOption[] => Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: `month.${i + 1}` }));
+
+// Same limits as the API:
+// - incomes and expenses: from January 1st of last year until today
+// - budgets: from this year to 5 years ahead, up to S/ 1,000,000
+const CURRENT_YEAR = new Date().getFullYear();
+const firstAllowedDate = () => `${CURRENT_YEAR - 1}-01-01`;
 
 // The logged-in user is the owner of every record that is created
 function ownerDefaults() {
@@ -50,7 +57,7 @@ export class ExpensesPage {
     fields: [
       { key: 'descripcionGasto', label: 'expenses.description', type: 'text', required: true, maxLength: 100 },
       { key: 'montoGasto', label: 'expenses.amount', type: 'number', required: true, min: 0.01, format: 'currency' },
-      { key: 'fechaGasto', label: 'expenses.date', type: 'date', required: true, format: 'date' },
+      { key: 'fechaGasto', label: 'expenses.date', type: 'date', required: true, format: 'date', minDate: firstAllowedDate, maxDate: localToday },
       { key: 'idCategoria', label: 'expenses.category', type: 'select', required: true, options: this.lookups.expenseCategories, format: 'option' },
       { key: 'idComerciante', label: 'expenses.merchant', type: 'select', required: true, options: this.lookups.merchantOptions, format: 'option' },
       {
@@ -79,7 +86,7 @@ export class IncomesPage {
     fields: [
       { key: 'fuente', label: 'incomes.source', type: 'text', required: true, maxLength: 100 },
       { key: 'monto', label: 'incomes.amount', type: 'number', required: true, min: 0.01, format: 'currency' },
-      { key: 'fecha', label: 'incomes.date', type: 'date', required: true, format: 'date' },
+      { key: 'fecha', label: 'incomes.date', type: 'date', required: true, format: 'date', minDate: firstAllowedDate, maxDate: localToday },
       { key: 'idCategoria', label: 'incomes.category', type: 'select', required: true, options: this.lookups.incomeCategories, format: 'option' },
       { key: 'tipoIngreso', label: 'incomes.type', type: 'select', required: true, translate: true, format: 'option', options: options('incomeType', ['fijo', 'variable']) },
       {
@@ -132,8 +139,8 @@ export class BudgetsPage {
     fields: [
       { key: 'idCategoria', label: 'budgets.category', type: 'select', required: true, options: this.lookups.expenseCategories, format: 'option' },
       { key: 'mes', label: 'budgets.month', type: 'select', required: true, translate: true, options: months, format: 'option' },
-      { key: 'anio', label: 'budgets.year', type: 'number', required: true, min: 2000, max: 2100 },
-      { key: 'montoAsignado', label: 'budgets.amount', type: 'number', required: true, min: 0.01, format: 'currency' },
+      { key: 'anio', label: 'budgets.year', type: 'number', required: true, min: CURRENT_YEAR, max: CURRENT_YEAR + 5 },
+      { key: 'montoAsignado', label: 'budgets.amount', type: 'number', required: true, min: 0.01, max: 1_000_000, format: 'currency' },
     ],
   };
 }

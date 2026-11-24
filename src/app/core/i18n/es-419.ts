@@ -49,6 +49,7 @@ export const ES_419: Record<string, string> = {
   'form.required': 'Este campo es obligatorio',
   'form.email': 'Ingresa un correo válido',
   'form.min': 'Valor mínimo: {min}',
+  'form.max': 'Valor máximo: {max}',
   'form.minLength': 'Al menos {min} caracteres',
   'form.pattern': 'Formato no válido',
   'form.save': 'Guardar',
