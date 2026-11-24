@@ -55,6 +55,7 @@ export interface Budget {
   montoAsignado: number;
   idUsuario: number;
   idCategoria: number;
+  estado?: number; // 1 = active (default in the API)
 }
 
 export interface Category {

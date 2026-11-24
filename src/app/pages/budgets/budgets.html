@@ -1,0 +1,156 @@
+@let s = summary();
+@let loc = i18n.locale();
+
+<section class="page" aria-labelledby="budgets-title">
+  <header class="page-header">
+    <h1 id="budgets-title">
+      <mat-icon aria-hidden="true">account_balance_wallet</mat-icon>
+      {{ 'budgets.title' | t }}
+    </h1>
+    @if (canCreate()) {
+      <button mat-flat-button (click)="create()">
+        <mat-icon aria-hidden="true">add</mat-icon>
+        {{ 'form.new' | t }}
+      </button>
+    }
+  </header>
+
+  <!-- Month selector: ◀ November 2026 ▶ -->
+  <nav class="month-nav" [attr.aria-label]="'budgets.monthNav' | t">
+    <button mat-icon-button (click)="move(-1)" [disabled]="!canGoBack()"
+            [attr.aria-label]="'budgets.previousMonth' | t" [matTooltip]="'budgets.previousMonth' | t">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <h2 class="month-title" aria-live="polite">{{ monthTitle() }}</h2>
+    <button mat-icon-button (click)="move(1)" [disabled]="!canGoForward()"
+            [attr.aria-label]="'budgets.nextMonth' | t" [matTooltip]="'budgets.nextMonth' | t">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    @if (!isCurrentMonth()) {
+      <button mat-stroked-button (click)="goToCurrentMonth()">
+        <mat-icon aria-hidden="true">today</mat-icon>
+        {{ 'budgets.currentMonth' | t }}
+      </button>
+    }
+  </nav>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
+  }
+  @if (loadError()) {
+    <p class="api-error" role="alert">{{ loadError() }}</p>
+  }
+
+  @if (!loading() && !loadError()) {
+    @if (s.rows.length) {
+      <!-- Totals of the month -->
+      <section class="totals" [attr.aria-label]="'budgets.totals' | t">
+        <mat-card appearance="outlined" class="total">
+          <p class="label">{{ 'budgets.assigned' | t }}</p>
+          <p class="value">{{ s.assigned | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</p>
+        </mat-card>
+        <mat-card appearance="outlined" class="total">
+          <p class="label">{{ 'budgets.spent' | t }}</p>
+          <p class="value">{{ s.spent | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</p>
+        </mat-card>
+        <mat-card appearance="outlined" class="total" [class.negative]="s.available < 0">
+          <p class="label">{{ 'budgets.available' | t }}</p>
+          <p class="value">{{ s.available | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</p>
+        </mat-card>
+      </section>
+
+      <p class="legend">
+        <span class="dot ok" aria-hidden="true"></span>{{ 'budgets.status.ok' | t }}
+        <span class="dot warning" aria-hidden="true"></span>{{ 'budgets.legendWarning' | t: { percent: warningPercent } }}
+        <span class="dot over" aria-hidden="true"></span>{{ 'budgets.status.over' | t }}
+      </p>
+
+      <!-- One card per budget of the month -->
+      <ul class="budget-list">
+        @for (row of s.rows; track row.budget.idPresupuesto) {
+          @let name = categoryName(row.budget.idCategoria);
+          <li>
+            <mat-card appearance="outlined" class="budget" [class]="'level-' + row.level">
+              <div class="budget-head">
+                <span class="category">
+                  <span class="color-dot" [style.background]="categoryColor(row.budget.idCategoria)" aria-hidden="true"></span>
+                  <h3>{{ name }}</h3>
+                </span>
+                <span class="status">
+                  <mat-icon aria-hidden="true">{{ levelIcon(row.level) }}</mat-icon>
+                  {{ 'budgets.status.' + row.level | t }}
+                </span>
+              </div>
+
+              <p class="amounts">
+                <strong>{{ row.spent | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</strong>
+                {{ 'budgets.of' | t }}
+                {{ row.budget.montoAsignado | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}
+                <span class="percent">· {{ row.percent }}%</span>
+              </p>
+
+              <mat-progress-bar mode="determinate" [value]="row.percent > 100 ? 100 : row.percent"
+                                [attr.aria-label]="'budgets.progressLabel' | t: { category: name, percent: row.percent }" />
+
+              <div class="budget-foot">
+                <span class="left">
+                  @if (row.available >= 0) {
+                    {{ 'budgets.left' | t: { amount: (row.available | currency: 'PEN' : 'S/ ' : '1.2-2' : loc) ?? '' } }}
+                  } @else {
+                    {{ 'budgets.overBy' | t: { amount: (-row.available | currency: 'PEN' : 'S/ ' : '1.2-2' : loc) ?? '' } }}
+                  }
+                </span>
+                <span class="actions">
+                  <button mat-icon-button (click)="edit(row.budget)"
+                          [attr.aria-label]="('form.edit' | t) + ' ' + name" [matTooltip]="'form.edit' | t">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="remove(row.budget)"
+                          [attr.aria-label]="('form.delete' | t) + ' ' + name" [matTooltip]="'form.delete' | t">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </span>
+              </div>
+            </mat-card>
+          </li>
+        }
+      </ul>
+    } @else {
+      <mat-card appearance="outlined" class="empty">
+        <mat-icon aria-hidden="true">savings</mat-icon>
+        <p>{{ 'budgets.empty' | t: { month: monthTitle() } }}</p>
+        @if (canCreate()) {
+          <button mat-flat-button (click)="create()">{{ 'budgets.create' | t }}</button>
+        } @else {
+          <p class="muted">{{ 'budgets.pastYear' | t }}</p>
+        }
+      </mat-card>
+    }
+
+    <!-- Categories with spending but no budget: one click to create it -->
+    @if (s.unbudgeted.length) {
+      <section class="unbudgeted" aria-labelledby="unbudgeted-title">
+        <h2 id="unbudgeted-title">{{ 'budgets.unbudgeted' | t }}</h2>
+        <p class="muted">{{ 'budgets.unbudgetedHint' | t }}</p>
+        <ul>
+          @for (item of s.unbudgeted; track item.idCategoria) {
+            <li>
+              <span class="category">
+                <span class="color-dot" [style.background]="categoryColor(item.idCategoria)" aria-hidden="true"></span>
+                {{ categoryName(item.idCategoria) }}
+              </span>
+              <span>{{ item.spent | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</span>
+              @if (canCreate()) {
+                <button mat-button (click)="create(item.idCategoria)"
+                        [attr.aria-label]="('budgets.create' | t) + ': ' + categoryName(item.idCategoria)">
+                  <mat-icon aria-hidden="true">add</mat-icon>
+                  {{ 'budgets.create' | t }}
+                </button>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  }
+</section>

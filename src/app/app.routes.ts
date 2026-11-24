@@ -5,8 +5,8 @@ import { RegisterPage } from './pages/auth/register';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Layout } from './pages/layout/layout';
 import { Profile } from './pages/profile/profile';
+import { BudgetsPage } from './pages/budgets/budgets';
 import {
-  BudgetsPage,
   CategoriesPage,
   ExpensesPage,
   GoalsPage,

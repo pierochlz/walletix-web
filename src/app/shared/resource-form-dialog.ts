@@ -16,6 +16,7 @@ import { FieldDef, ResourceConfig } from './resource-config';
 export interface ResourceFormData {
   config: ResourceConfig;
   item: Record<string, any> | null; // null = new record
+  initial?: Record<string, unknown>; // values already filled in a new record (e.g. the month of the budget view)
 }
 
 // Dialog with a reactive form built from the field definitions of the page
@@ -46,6 +47,11 @@ export class ResourceFormDialog {
   readonly error = signal<string | null>(null);
   readonly form = this.buildForm();
 
+  constructor() {
+    // When the user corrects the data, the API error of the previous attempt no longer applies
+    this.form.valueChanges.subscribe(() => this.error.set(null));
+  }
+
   // One FormControl per field, with its validators
   private buildForm(): FormGroup {
     const controls: Record<string, FormControl> = {};
@@ -56,7 +62,7 @@ export class ResourceFormDialog {
       if (field.max !== undefined) validators.push(Validators.max(field.max));
       if (field.maxLength) validators.push(Validators.maxLength(field.maxLength));
       if (field.pattern) validators.push(Validators.pattern(field.pattern));
-      const initial = this.data.item?.[field.key] ?? (field.type === 'checkbox' ? false : null);
+      const initial = this.data.item?.[field.key] ?? this.data.initial?.[field.key] ?? (field.type === 'checkbox' ? false : null);
       controls[field.key] = new FormControl(initial, validators);
     }
     return new FormGroup(controls);
@@ -66,9 +72,15 @@ export class ResourceFormDialog {
     const control = this.form.get(field.key);
     if (!control?.errors) return '';
     if (control.errors['required']) return this.i18n.t('form.required');
-    if (control.errors['min']) return this.i18n.t('form.min', { min: field.min ?? 0 });
-    if (control.errors['max']) return this.i18n.t('form.max', { max: field.max ?? 0 });
+    if (control.errors['min']) return this.i18n.t('form.min', { min: this.limit(field, field.min) });
+    if (control.errors['max']) return this.i18n.t('form.max', { max: this.limit(field, field.max) });
     return this.i18n.t('form.pattern');
+  }
+
+  // Amounts with thousands separators ("1,000,000"); other numbers, like the year, as they are ("2031")
+  private limit(field: FieldDef, value = 0): string {
+    if (field.format !== 'currency') return String(value);
+    return new Intl.NumberFormat(this.i18n.locale(), { maximumFractionDigits: 2 }).format(value);
   }
 
   save(): void {
@@ -85,7 +97,7 @@ export class ResourceFormDialog {
     this.error.set(null);
     request.subscribe({
       // The page receives the API response (for example, a budget alert)
-      next: (response) => this.dialogRef.close({ response }),
+      next: (response) => this.dialogRef.close({ response, body }),
       error: (err) => {
         this.saving.set(false);
         this.error.set(apiErrorMessage(err, this.i18n.t('form.error')));

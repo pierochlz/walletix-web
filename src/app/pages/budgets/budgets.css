@@ -1,0 +1,274 @@
+/* Colors of the three levels. Text colors keep a 4.5:1 contrast on white (WCAG AA). */
+:host {
+  --level-ok: #15803d;
+  --level-warning: #b45309;
+  --level-over: #b91c1c;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+h1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font: var(--mat-sys-headline-small);
+}
+
+h2,
+h3 {
+  margin: 0;
+}
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-bottom: 16px;
+}
+
+.month-title {
+  min-width: 170px;
+  text-align: center;
+  font: var(--mat-sys-title-large);
+}
+
+.api-error {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.muted {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* Totals */
+.totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.total {
+  padding: 12px 16px;
+}
+
+.label {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.value {
+  margin: 4px 0 0;
+  font: var(--mat-sys-title-large);
+}
+
+.total.negative .value {
+  color: var(--level-over);
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  margin: 0 0 12px;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-left: 10px;
+  border-radius: 50%;
+}
+.dot:first-child {
+  margin-left: 0;
+}
+.dot.ok {
+  background: var(--level-ok);
+}
+.dot.warning {
+  background: var(--level-warning);
+}
+.dot.over {
+  background: var(--level-over);
+}
+
+/* Budget cards */
+.budget-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: 12px;
+}
+
+.budget {
+  padding: 14px 16px 6px;
+  border-left: 6px solid var(--level-color);
+}
+
+.level-ok {
+  --level-color: var(--level-ok);
+}
+.level-warning {
+  --level-color: var(--level-warning);
+}
+.level-over {
+  --level-color: var(--level-over);
+}
+
+/* The progress bar takes the color of the level */
+.budget mat-progress-bar {
+  --mat-progress-bar-active-indicator-color: var(--level-color);
+  --mdc-linear-progress-active-indicator-color: var(--level-color);
+  height: 8px;
+  border-radius: 4px;
+}
+
+.budget-head,
+.budget-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.category {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.category h3 {
+  font: var(--mat-sys-title-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.color-dot {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--mat-sys-outline-variant);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  font: var(--mat-sys-label-large);
+  color: var(--level-color);
+}
+
+.status mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.amounts {
+  margin: 10px 0 8px;
+}
+
+.percent {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.left {
+  font: var(--mat-sys-body-medium);
+}
+
+.level-over .left {
+  color: var(--level-over);
+  font-weight: 500;
+}
+
+.actions {
+  white-space: nowrap;
+}
+
+/* Empty month */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 16px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.empty > mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: var(--mat-sys-primary);
+}
+
+.empty p {
+  margin: 0;
+}
+
+/* Expenses without a budget */
+.unbudgeted h2 {
+  font: var(--mat-sys-title-medium);
+}
+
+.unbudgeted p {
+  margin: 4px 0 8px;
+}
+
+.unbudgeted ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+}
+
+.unbudgeted li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px 6px 16px;
+}
+
+.unbudgeted li + li {
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
+@media (max-width: 480px) {
+  .month-title {
+    min-width: 0;
+    flex: 1;
+  }
+  .unbudgeted li {
+    grid-template-columns: 1fr auto;
+  }
+  .unbudgeted li button {
+    grid-column: 1 / -1;
+    justify-self: end;
+  }
+}
