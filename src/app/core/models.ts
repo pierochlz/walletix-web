@@ -23,6 +23,7 @@ export interface Expense {
   fechaGasto: string;
   metodoPagoGasto: string;
   fijoGasto: boolean;
+  alertaPresupuesto?: string; // US15: only in the response when the expense goes over the monthly budget
 }
 
 export interface Income {

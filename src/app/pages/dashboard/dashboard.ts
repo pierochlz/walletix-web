@@ -1,3 +1,4 @@
+import { localMonth } from '../../core/dates';
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
@@ -43,7 +44,7 @@ export class Dashboard implements OnInit {
   readonly ratesError = signal(false);
 
   // "yyyy-MM" of today, to add up only this month's records
-  private readonly thisMonth = new Date().toISOString().slice(0, 7);
+  private readonly thisMonth = localMonth();
 
   readonly monthExpense = computed(() =>
     this.expenses()

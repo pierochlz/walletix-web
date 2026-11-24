@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../core/auth.service';
 import { LookupStore } from '../core/lookup.store';
+import { Expense } from '../core/models';
 import {
   BudgetService,
   CategoryService,
@@ -24,6 +25,12 @@ function ownerDefaults() {
   return () => ({ idUsuario: auth.user()?.idUsuario ?? 0 });
 }
 
+// Incomes and expenses change the balance in the API: reload the user so the dashboard shows the new balance
+function reloadBalance() {
+  const auth = inject(AuthService);
+  return () => auth.loadCurrentUser().subscribe({ error: () => {} });
+}
+
 @Component({
   selector: 'app-expenses-page',
   imports: [ResourcePage],
@@ -37,6 +44,9 @@ export class ExpensesPage {
     idKey: 'idGasto',
     service: inject(ExpenseService),
     defaults: ownerDefaults(),
+    afterChange: reloadBalance(),
+    // US15: the API answers with "alertaPresupuesto" when the expense goes over the monthly budget
+    warningFromResponse: (response) => (response as Expense | null)?.alertaPresupuesto ?? null,
     fields: [
       { key: 'descripcionGasto', label: 'expenses.description', type: 'text', required: true, maxLength: 100 },
       { key: 'montoGasto', label: 'expenses.amount', type: 'number', required: true, min: 0.01, format: 'currency' },
@@ -65,6 +75,7 @@ export class IncomesPage {
     idKey: 'idIngreso',
     service: inject(IncomeService),
     defaults: ownerDefaults(),
+    afterChange: reloadBalance(),
     fields: [
       { key: 'fuente', label: 'incomes.source', type: 'text', required: true, maxLength: 100 },
       { key: 'monto', label: 'incomes.amount', type: 'number', required: true, min: 0.01, format: 'currency' },

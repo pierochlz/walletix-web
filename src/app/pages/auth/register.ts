@@ -1,3 +1,4 @@
+import { localToday } from '../../core/dates';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -43,7 +44,7 @@ export class RegisterPage {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly segments = ['estudiante', 'trabajador', 'independiente'];
-  readonly today = new Date().toISOString().slice(0, 10);
+  readonly today = localToday();
 
   // Same rules that UsuarioController.validar() checks in the API
   readonly form = this.fb.nonNullable.group({

@@ -33,4 +33,6 @@ export interface ResourceConfig {
   canEdit?: () => boolean; // default: everyone can create / edit / delete
   noteKey?: string; // message shown when canEdit() is false
   afterChange?: () => void; // e.g. reload categories after creating one
+  // Reads the API response after saving; if it returns a text, it is shown as a warning (e.g. budget alert)
+  warningFromResponse?: (response: unknown) => string | null;
 }

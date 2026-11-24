@@ -45,6 +45,13 @@ button.danger {
   color: var(--mat-sys-on-error) !important;
 }
 
+/* Warning snackbar (US15 budget alert): amber so it is not confused with a success message */
+.snack-warning {
+  --mat-snack-bar-container-color: #fef3c7;
+  --mat-snack-bar-supporting-text-color: #78350f;
+  --mat-snack-bar-button-color: #78350f;
+}
+
 /* Phones: the tables of .responsive-table become cards with "label: value" lines.
    It is global because Material creates <thead>/<tbody> itself (outside the component styles). */
 @media (max-width: 700px) {

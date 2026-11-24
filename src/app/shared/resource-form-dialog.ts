@@ -84,7 +84,8 @@ export class ResourceFormDialog {
     this.saving.set(true);
     this.error.set(null);
     request.subscribe({
-      next: () => this.dialogRef.close(true),
+      // The page receives the API response (for example, a budget alert)
+      next: (response) => this.dialogRef.close({ response }),
       error: (err) => {
         this.saving.set(false);
         this.error.set(apiErrorMessage(err, this.i18n.t('form.error')));

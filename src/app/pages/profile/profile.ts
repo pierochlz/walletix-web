@@ -1,3 +1,4 @@
+import { localToday } from '../../core/dates';
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -34,7 +35,7 @@ export class Profile {
   private i18n = inject(I18nService);
 
   readonly segments = ['estudiante', 'trabajador', 'independiente'];
-  readonly today = new Date().toISOString().slice(0, 10);
+  readonly today = localToday();
   readonly profileError = signal<string | null>(null);
   readonly passwordError = signal<string | null>(null);
 

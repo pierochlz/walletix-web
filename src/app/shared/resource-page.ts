@@ -100,8 +100,8 @@ export class ResourcePage implements OnInit, AfterViewInit {
     this.dialog
       .open(ResourceFormDialog, { data: { config: this.config(), item }, width: '640px', maxWidth: '95vw' })
       .afterClosed()
-      .pipe(filter((saved) => saved === true))
-      .subscribe(() => this.changed('form.saved'));
+      .pipe(filter((result): result is { response: unknown } => !!result))
+      .subscribe(({ response }) => this.changed('form.saved', response));
   }
 
   remove(item: Record<string, any>): void {
@@ -119,8 +119,14 @@ export class ResourcePage implements OnInit, AfterViewInit {
       });
   }
 
-  private changed(messageKey: string): void {
-    this.snackBar.open(this.i18n.t(messageKey), 'OK', { duration: 3000 });
+  private changed(messageKey: string, response?: unknown): void {
+    const warning = this.config().warningFromResponse?.(response);
+    if (warning) {
+      // Warnings stay longer and use the warning style (see styles.css)
+      this.snackBar.open(`⚠️ ${warning}`, 'OK', { duration: 8000, panelClass: 'snack-warning', politeness: 'assertive' });
+    } else {
+      this.snackBar.open(this.i18n.t(messageKey), 'OK', { duration: 3000 });
+    }
     this.config().afterChange?.();
     this.load();
   }
