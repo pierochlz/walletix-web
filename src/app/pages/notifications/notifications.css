@@ -1,0 +1,151 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+h1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font: var(--mat-sys-headline-small);
+}
+
+.tabs {
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.count {
+  display: inline-block;
+  min-width: 22px;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 11px;
+  background: var(--mat-sys-surface-container-high);
+  font: var(--mat-sys-label-medium);
+  text-align: center;
+}
+
+.api-error {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 14px 12px 14px 16px;
+}
+
+.item + .item {
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
+/* Unread: a soft tint of the main color (not the full container color, too bright for a list) and bold title */
+.item.unread {
+  background: color-mix(in srgb, var(--mat-sys-primary) 7%, var(--mat-sys-surface));
+}
+
+.item.unread .title {
+  font-weight: 600;
+}
+
+.type-icon {
+  margin-top: 2px;
+  color: var(--mat-sys-primary);
+}
+
+/* Budget alerts in amber (same color as the budgets view) */
+.type-alerta .type-icon {
+  color: #b45309;
+}
+
+.body {
+  min-width: 0;
+}
+
+.title,
+.message {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--mat-sys-title-small);
+}
+
+.message {
+  margin-top: 2px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.when {
+  display: block;
+  margin-top: 4px;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mat-sys-primary);
+  flex: none;
+}
+
+.actions {
+  display: flex;
+  white-space: nowrap;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 16px;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+}
+
+.empty mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.empty p {
+  margin: 0;
+}
+
+/* Text only for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

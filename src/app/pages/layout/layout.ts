@@ -1,15 +1,18 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, inject, OnInit } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { map } from 'rxjs';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter, map } from 'rxjs';
 import { AuthService } from '../../core/auth.service';
+import { NotificationStore } from '../../core/notification.store';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { LookupStore } from '../../core/lookup.store';
 import { LanguageMenu } from '../../shared/language-menu';
@@ -27,6 +30,8 @@ import { LanguageMenu } from '../../shared/language-menu';
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
+    MatBadgeModule,
+    MatTooltipModule,
     TranslatePipe,
     LanguageMenu,
   ],
@@ -35,7 +40,10 @@ import { LanguageMenu } from '../../shared/language-menu';
 })
 export class Layout implements OnInit {
   readonly auth = inject(AuthService);
+  readonly notifications = inject(NotificationStore);
   private lookups = inject(LookupStore);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   // true on phones and small tablets: the menu becomes a drawer that opens with the ☰ button
   readonly isHandset = toSignal(
@@ -55,11 +63,17 @@ export class Layout implements OnInit {
     { path: '/goals', icon: 'savings', label: 'nav.goals' },
     { path: '/categories', icon: 'category', label: 'nav.categories' },
     { path: '/merchants', icon: 'storefront', label: 'nav.merchants' },
+    { path: '/notifications', icon: 'notifications', label: 'nav.notifications' },
   ];
 
   ngOnInit(): void {
     // Once logged in: who am I (GET /usuarios/yo) + categories and merchants for the selects
     this.auth.loadCurrentUser().subscribe({ error: () => {} });
     this.lookups.refresh();
+    // Bell counter: loaded now and again on every page change (new alerts appear without reloading)
+    this.notifications.refresh();
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.notifications.refresh());
   }
 }

@@ -1,0 +1,73 @@
+@let counts = store.counts();
+@let loc = i18n.locale();
+
+<section class="page" aria-labelledby="notifications-title">
+  <header class="page-header">
+    <h1 id="notifications-title">
+      <mat-icon aria-hidden="true">notifications</mat-icon>
+      {{ 'notifications.title' | t }}
+    </h1>
+    <button mat-stroked-button (click)="markAll()" [disabled]="counts.unread === 0">
+      <mat-icon aria-hidden="true">done_all</mat-icon>
+      {{ 'notifications.markAll' | t }}
+    </button>
+  </header>
+
+  <!-- US23: three tabs with the number of notifications of each one -->
+  <mat-button-toggle-group class="tabs" [value]="filter()" (change)="filter.set($event.value)"
+                           [attr.aria-label]="'notifications.filter' | t">
+    @for (f of filters; track f) {
+      <mat-button-toggle [value]="f">
+        {{ 'notifications.tab.' + f | t }}
+        <span class="count">{{ counts[f] }}</span>
+      </mat-button-toggle>
+    }
+  </mat-button-toggle-group>
+
+  @if (!store.loaded()) {
+    <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
+  } @else if (store.error()) {
+    <p class="api-error" role="alert">{{ 'app.connectionError' | t }}</p>
+  } @else {
+    <ul class="list" aria-live="polite">
+      @for (n of visible(); track n.idNotificacion) {
+        @let unread = !n.estadoNotificacion;
+        <li class="item" [class.unread]="unread" [class]="'type-' + n.tipo">
+          <mat-icon class="type-icon" aria-hidden="true">{{ iconOf(n.tipo) }}</mat-icon>
+          <div class="body">
+            <p class="title">
+              @if (unread) {
+                <span class="dot" aria-hidden="true"></span>
+                <span class="sr-only">{{ 'notifications.unreadLabel' | t }}:</span>
+              }
+              {{ n.titulo }}
+            </p>
+            <p class="message">{{ n.mensaje }}</p>
+            @if (n.fechaNotificacion) {
+              <time class="when" [attr.datetime]="n.fechaNotificacion"
+                    [title]="n.fechaNotificacion | date: 'medium' : undefined : loc">{{ ago(n.fechaNotificacion) }}</time>
+            }
+          </div>
+          <div class="actions">
+            <!-- US24: mark as read / unread -->
+            <!-- The label includes the title: a screen reader says WHICH notification the button acts on -->
+            <button mat-icon-button (click)="toggleRead(n)"
+                    [attr.aria-label]="((unread ? 'notifications.markRead' : 'notifications.markUnread') | t) + ': ' + n.titulo"
+                    [matTooltip]="(unread ? 'notifications.markRead' : 'notifications.markUnread') | t">
+              <mat-icon>{{ unread ? 'mark_email_read' : 'mark_email_unread' }}</mat-icon>
+            </button>
+            <button mat-icon-button (click)="remove(n)" [attr.aria-label]="('form.delete' | t) + ': ' + n.titulo"
+                    [matTooltip]="'form.delete' | t">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </li>
+      } @empty {
+        <li class="empty">
+          <mat-icon aria-hidden="true">notifications_none</mat-icon>
+          <p>{{ 'notifications.empty.' + filter() | t }}</p>
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -77,6 +77,17 @@ export interface Merchant {
   predeterminadoComerciante?: boolean;
 }
 
+// Notification of the panel (US22-US24). estadoNotificacion: true = read
+export interface AppNotification {
+  idNotificacion: number;
+  idUsuario: number;
+  titulo: string;
+  tipo: string; // alerta, logro, reto...
+  mensaje: string;
+  estadoNotificacion: boolean;
+  fechaNotificacion: string | null; // Peru's local time; null in old notifications
+}
+
 // Body of POST /login and its response
 export interface LoginRequest {
   correo: string;

@@ -40,6 +40,14 @@
         </button>
       }
       <span class="spacer"></span>
+      <!-- US22: bell with the number of unread notifications -->
+      @let unread = notifications.unreadCount();
+      <a mat-icon-button routerLink="/notifications"
+         [attr.aria-label]="unread ? ('notifications.bellUnread' | t: { count: unread }) : ('notifications.title' | t)"
+         [matTooltip]="'notifications.title' | t">
+        <mat-icon [matBadge]="unread > 9 ? '9+' : unread" [matBadgeHidden]="unread === 0" matBadgeColor="warn"
+                  aria-hidden="true">notifications</mat-icon>
+      </a>
       <app-language-menu />
       <button mat-button [matMenuTriggerFor]="userMenu" class="user-button"
               [attr.aria-label]="auth.user()?.nombreUsuario ?? ''">

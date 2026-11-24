@@ -3,6 +3,7 @@ import { AuthService } from '../core/auth.service';
 import { LookupStore } from '../core/lookup.store';
 import { CATEGORY_COLORS, DEFAULT_CATEGORY_ICON } from '../core/category-icons';
 import { localToday } from '../core/dates';
+import { NotificationStore } from '../core/notification.store';
 import { Expense } from '../core/models';
 import {
   CategoryService,
@@ -45,13 +46,19 @@ function reloadBalance() {
 })
 export class ExpensesPage {
   private lookups = inject(LookupStore);
+  private notifications = inject(NotificationStore);
+  private reload = reloadBalance();
   readonly config: ResourceConfig = {
     titleKey: 'expenses.title',
     icon: 'shopping_cart',
     idKey: 'idGasto',
     service: inject(ExpenseService),
     defaults: ownerDefaults(),
-    afterChange: reloadBalance(),
+    // New balance + bell counter (an expense over the budget creates a notification)
+    afterChange: () => {
+      this.reload();
+      this.notifications.refresh();
+    },
     // US15: the API answers with "alertaPresupuesto" when the expense goes over the monthly budget
     warningFromResponse: (response) => (response as Expense | null)?.alertaPresupuesto ?? null,
     fields: [
