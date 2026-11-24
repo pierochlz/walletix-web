@@ -181,9 +181,11 @@ export const EN_US: Record<string, string> = {
 
   'merchants.title': 'Merchants',
   'merchants.name': 'Name',
-  'merchants.logo': 'Logo URL',
   'merchants.category': 'Category',
-  'merchants.adminOnly': 'Only an administrator can add or edit merchants.',
+  'merchants.default': 'Default',
+  'merchants.locked': 'Walletix default merchant: it cannot be edited or deleted',
+  'merchants.info': 'Can\'t find where you bought? Create it with "New": only you will see it. Merchants with 🔒 are defaults that every user has.',
+  'merchants.infoAdmin': 'As an administrator, the merchants you create are defaults (everyone sees them). You also see each user\'s own merchants.',
 
   'profile.title': 'My profile',
   'profile.save': 'Save changes',

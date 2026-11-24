@@ -72,7 +72,9 @@ export interface Merchant {
   idComerciante: number;
   idCategoria: number;
   nombreComerciante: string;
-  urlLogoComerciante: string;
+  urlLogoComerciante?: string; // optional: the API saves a default one
+  idUsuario?: number | null; // null = default merchant (everyone sees it); otherwise, the owner's id
+  predeterminadoComerciante?: boolean;
 }
 
 // Body of POST /login and its response

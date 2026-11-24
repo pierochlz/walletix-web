@@ -181,9 +181,11 @@ export const ES_419: Record<string, string> = {
 
   'merchants.title': 'Comercios',
   'merchants.name': 'Nombre',
-  'merchants.logo': 'URL del logo',
   'merchants.category': 'Categoría',
-  'merchants.adminOnly': 'Solo un administrador puede agregar o editar comercios.',
+  'merchants.default': 'Predeterminado',
+  'merchants.locked': 'Comercio predeterminado de Walletix: no se puede editar ni eliminar',
+  'merchants.info': '¿No encuentras dónde compraste? Créalo con «Nuevo»: solo tú lo verás. Los comercios con 🔒 son predeterminados y los tiene todo usuario.',
+  'merchants.infoAdmin': 'Como administrador, los comercios que creas son predeterminados (los ven todos). También ves los comercios propios de cada usuario.',
 
   'profile.title': 'Mi perfil',
   'profile.save': 'Guardar cambios',

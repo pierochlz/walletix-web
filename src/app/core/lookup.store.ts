@@ -16,8 +16,17 @@ export class LookupStore {
   readonly expenseCategories = computed(() => this.toOptions(this.categories().filter((c) => c.tipoCategoria === 'gasto')));
   readonly incomeCategories = computed(() => this.toOptions(this.categories().filter((c) => c.tipoCategoria === 'ingreso')));
   readonly allCategories = computed(() => this.toOptions(this.categories()));
+  // Each merchant shows the icon and color of its category
   readonly merchantOptions = computed(() =>
-    this.merchants().map((m) => ({ value: m.idComerciante, label: m.nombreComerciante })),
+    this.merchants().map((m) => {
+      const category = this.categories().find((c) => c.idCategoria === m.idCategoria);
+      return {
+        value: m.idComerciante,
+        label: m.nombreComerciante,
+        icon: categoryIcon(category?.urlIconoCategoria),
+        color: category?.colorHexCategoria,
+      };
+    }),
   );
 
   refresh(): void {

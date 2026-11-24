@@ -166,18 +166,22 @@ export class CategoriesPage {
 export class MerchantsPage {
   private lookups = inject(LookupStore);
   private auth = inject(AuthService);
+  private readonly isAdmin = this.auth.isAdmin();
   readonly config: ResourceConfig = {
     titleKey: 'merchants.title',
     icon: 'storefront',
     idKey: 'idComerciante',
     service: inject(MerchantService),
-    canEdit: () => this.auth.isAdmin(), // the API only lets ADMIN create, edit or delete merchants
-    noteKey: 'merchants.adminOnly',
     afterChange: () => this.lookups.refresh(),
+    // Same pattern as categories: default merchants belong to everyone, only an ADMIN changes them
+    canEditRow: (row) => this.isAdmin || !row['predeterminadoComerciante'],
+    lockedKey: 'merchants.locked',
+    infoKey: this.isAdmin ? 'merchants.infoAdmin' : 'merchants.info',
     fields: [
       { key: 'nombreComerciante', label: 'merchants.name', type: 'text', required: true, maxLength: 50 },
+      // The merchant shows the icon of its category (no logo URL to type)
       { key: 'idCategoria', label: 'merchants.category', type: 'select', required: true, options: this.lookups.expenseCategories, format: 'option' },
-      { key: 'urlLogoComerciante', label: 'merchants.logo', type: 'url', required: true, maxLength: 100, inTable: false },
+      { key: 'predeterminadoComerciante', label: 'merchants.default', type: 'checkbox', format: 'bool', inForm: false },
     ],
   };
 }
