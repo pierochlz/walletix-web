@@ -11,6 +11,7 @@ import { ExchangeRates, ExchangeRateService } from '../../core/exchange-rate.ser
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Expense, Income, SavingGoal } from '../../core/models';
+import { onlyOwn } from '../../core/ownership';
 import { ExpenseService, IncomeService, SavingGoalService } from '../../core/resource.services';
 
 @Component({
@@ -37,9 +38,16 @@ export class Dashboard implements OnInit {
   private goalService = inject(SavingGoalService);
   private exchangeRateService = inject(ExchangeRateService);
 
-  readonly expenses = signal<Expense[]>([]);
-  readonly incomes = signal<Income[]>([]);
-  readonly goals = signal<SavingGoal[]>([]);
+  // What the API returns (for an ADMIN, the records of all users)
+  private readonly allExpenses = signal<Expense[]>([]);
+  private readonly allIncomes = signal<Income[]>([]);
+  private readonly allGoals = signal<SavingGoal[]>([]);
+
+  // The dashboard is about MY finances: only the records of the logged-in user
+  private readonly myId = computed(() => this.auth.user()?.idUsuario);
+  readonly expenses = computed(() => onlyOwn(this.allExpenses(), this.myId()));
+  readonly incomes = computed(() => onlyOwn(this.allIncomes(), this.myId()));
+  readonly goals = computed(() => onlyOwn(this.allGoals(), this.myId()));
   readonly rates = signal<ExchangeRates | null>(null);
   readonly ratesError = signal(false);
 
@@ -70,9 +78,9 @@ export class Dashboard implements OnInit {
   });
 
   ngOnInit(): void {
-    this.expenseService.list().subscribe({ next: (list) => this.expenses.set(list), error: () => {} });
-    this.incomeService.list().subscribe({ next: (list) => this.incomes.set(list), error: () => {} });
-    this.goalService.list().subscribe({ next: (list) => this.goals.set(list), error: () => {} });
+    this.expenseService.list().subscribe({ next: (list) => this.allExpenses.set(list), error: () => {} });
+    this.incomeService.list().subscribe({ next: (list) => this.allIncomes.set(list), error: () => {} });
+    this.goalService.list().subscribe({ next: (list) => this.allGoals.set(list), error: () => {} });
     this.exchangeRateService.latestFromPen().subscribe({
       next: (rates) => this.rates.set(rates),
       error: () => this.ratesError.set(true),

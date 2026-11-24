@@ -12,6 +12,7 @@ import { apiErrorMessage } from '../../core/api-error';
 import { AuthService } from '../../core/auth.service';
 import { BudgetLevel, shiftMonth, summarizeMonth, WARNING_PERCENT } from '../../core/budget-summary';
 import { categoryIcon } from '../../core/category-icons';
+import { onlyOwn } from '../../core/ownership';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { LookupStore } from '../../core/lookup.store';
@@ -66,9 +67,10 @@ export class BudgetsPage implements OnInit {
   readonly loadError = signal<string | null>(null);
 
   // Everything on the screen comes from here: it is recalculated when the month or the data change
-  readonly summary = computed(() =>
-    summarizeMonth(this.budgets(), this.expenses(), this.year(), this.month(), this.auth.user()?.idUsuario),
-  );
+  readonly summary = computed(() => {
+    const myId = this.auth.user()?.idUsuario; // an ADMIN receives everyone's records: only mine count here
+    return summarizeMonth(onlyOwn(this.budgets(), myId), onlyOwn(this.expenses(), myId), this.year(), this.month());
+  });
 
   readonly monthTitle = computed(() => `${this.i18n.t('month.' + this.month())} ${this.year()}`);
   readonly isCurrentMonth = computed(
