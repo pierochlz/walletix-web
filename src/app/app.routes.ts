@@ -4,6 +4,7 @@ import { LoginPage } from './pages/auth/login';
 import { RegisterPage } from './pages/auth/register';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Layout } from './pages/layout/layout';
+import { ChallengesPage } from './pages/challenges/challenges';
 import { NotificationsPage } from './pages/notifications/notifications';
 import { Profile } from './pages/profile/profile';
 import { BudgetsPage } from './pages/budgets/budgets';
@@ -33,6 +34,7 @@ export const routes: Routes = [
       { path: 'incomes', component: IncomesPage, title: 'Walletix | Incomes' },
       { path: 'budgets', component: BudgetsPage, title: 'Walletix | Budgets' },
       { path: 'goals', component: GoalsPage, title: 'Walletix | Savings goals' },
+      { path: 'challenges', component: ChallengesPage, title: 'Walletix | Challenges' },
       { path: 'categories', component: CategoriesPage, title: 'Walletix | Categories' },
       { path: 'merchants', component: MerchantsPage, title: 'Walletix | Merchants' },
       { path: 'profile', component: Profile, title: 'Walletix | Profile' },

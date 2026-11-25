@@ -80,3 +80,9 @@ h2 {
   font-weight: 500;
   color: var(--mat-sys-primary);
 }
+
+.stat-link {
+  display: inline-block;
+  margin-top: 6px;
+  font: var(--mat-sys-label-medium);
+}

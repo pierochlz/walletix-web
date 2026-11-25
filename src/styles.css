@@ -45,6 +45,13 @@ button.danger {
   color: var(--mat-sys-on-error) !important;
 }
 
+/* Success snackbar (challenges: "Progress registered! +20 XP") */
+.snack-success {
+  --mat-snack-bar-container-color: #dcfce7;
+  --mat-snack-bar-supporting-text-color: #14532d;
+  --mat-snack-bar-button-color: #14532d;
+}
+
 /* Warning snackbar (US15 budget alert): amber so it is not confused with a success message */
 .snack-warning {
   --mat-snack-bar-container-color: #fef3c7;

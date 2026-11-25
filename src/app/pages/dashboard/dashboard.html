@@ -21,6 +21,7 @@
     <mat-icon aria-hidden="true">emoji_events</mat-icon>
     <p class="label">{{ 'dashboard.points' | t }}</p>
     <p class="value">{{ auth.user()?.puntosGamificacionUsuario ?? 0 }}</p>
+    <a routerLink="/challenges" class="stat-link">{{ 'dashboard.seeChallenges' | t }}</a>
   </mat-card>
 </section>
 

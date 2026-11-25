@@ -61,6 +61,7 @@ export class Layout implements OnInit {
     { path: '/incomes', icon: 'payments', label: 'nav.incomes' },
     { path: '/budgets', icon: 'account_balance_wallet', label: 'nav.budgets' },
     { path: '/goals', icon: 'savings', label: 'nav.goals' },
+    { path: '/challenges', icon: 'emoji_events', label: 'nav.challenges' },
     { path: '/categories', icon: 'category', label: 'nav.categories' },
     { path: '/merchants', icon: 'storefront', label: 'nav.merchants' },
     { path: '/notifications', icon: 'notifications', label: 'nav.notifications' },

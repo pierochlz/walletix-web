@@ -88,6 +88,91 @@ export interface AppNotification {
   fechaNotificacion: string | null; // Peru's local time; null in old notifications
 }
 
+// ---- Challenges and achievements center (US26-US30) ----
+
+export type ChallengeState = 'EN_PROGRESO' | 'COMPLETADO' | 'VENCIDO' | 'ABANDONADO';
+
+// A challenge the user is in ("Day 5 of 7")
+export interface Participation {
+  idUsuarioDesafio: number;
+  idDesafio: number;
+  titulo: string;
+  descripcion: string;
+  tipo: string | null;
+  oficial: boolean;
+  diaActual: number;
+  duracionDias: number;
+  porcentaje: number;
+  ahorroEstimado: number;
+  montoObjetivo: number;
+  puntosRecompensa: number;
+  estadoDesafio: ChallengeState;
+  registradoHoy: boolean;
+  fechaFin: string;
+  diasRestantes: number;
+}
+
+// Top of the center: level, effectiveness, protected money and streak
+export interface ChallengeSummary {
+  nivel: number;
+  nombreNivel: string;
+  xp: number;
+  xpInicioNivel: number;
+  xpSiguienteNivel: number | null;
+  retosSuperados: number;
+  retosTotales: number;
+  dineroBlindado: number;
+  racha: number;
+  activos: Participation[];
+  historial: Participation[];
+}
+
+// Official challenge with the requirements the user is missing (US27, US28)
+export interface AvailableChallenge {
+  idDesafio: number;
+  titulo: string;
+  descripcion: string;
+  tipo: string | null;
+  montoObjetivo: number;
+  puntosRecompensa: number;
+  duracionDias: number;
+  fechaInicio: string;
+  fechaFin: string;
+  edadMinima: number;
+  participantes: number;
+  puedeUnirse: boolean;
+  requisitosFaltantes: string[];
+}
+
+// Answer of "Register today's progress"
+export interface ProgressResult {
+  xpGanado: number;
+  diaActual: number;
+  duracionDias: number;
+  completado: boolean;
+  puntosRecompensa: number;
+  logrosDesbloqueados: string[];
+}
+
+// Medal of the showcase (US30)
+export interface Medal {
+  idLogro: number;
+  nombre: string;
+  descripcion: string;
+  puntos: number;
+  desbloqueada: boolean;
+  avanceActual: number | null;
+  avanceMeta: number | null;
+}
+
+// "Create a new challenge" form (US29)
+export interface PersonalChallenge {
+  tipo: string;
+  titulo?: string | null;
+  duracionDias: number;
+  montoObjetivo: number;
+}
+
 // Body of POST /login and its response
 export interface LoginRequest {
   correo: string;

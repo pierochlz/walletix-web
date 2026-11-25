@@ -1,0 +1,195 @@
+@let s = summary();
+@let loc = i18n.locale();
+
+<section class="page" aria-labelledby="challenges-title">
+  <header class="page-header">
+    <h1 id="challenges-title">
+      <mat-icon aria-hidden="true">emoji_events</mat-icon>
+      {{ 'challenges.title' | t }}
+    </h1>
+    <button mat-flat-button (click)="create()">
+      <mat-icon aria-hidden="true">add</mat-icon>
+      {{ 'challenges.create' | t }}
+    </button>
+  </header>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
+  }
+  @if (loadError()) {
+    <p class="api-error" role="alert">{{ loadError() }}</p>
+  }
+
+  @if (s) {
+    <!-- Summary: level and XP, effectiveness, protected money and streak -->
+    <section class="stats" [attr.aria-label]="'challenges.summary' | t">
+      <mat-card appearance="outlined" class="stat level">
+        <p class="label">{{ 'challenges.level' | t }}</p>
+        <p class="value">{{ s.nivel }} · {{ 'level.' + s.nombreNivel | t }}</p>
+        <mat-progress-bar mode="determinate" [value]="levelPercent()"
+                          [attr.aria-label]="'challenges.xpLabel' | t: { xp: s.xp, next: s.xpSiguienteNivel ?? s.xp }" />
+        <p class="sub">
+          @if (s.xpSiguienteNivel !== null) {
+            {{ 'challenges.xpOf' | t: { xp: s.xp, next: s.xpSiguienteNivel } }}
+          } @else {
+            {{ 'challenges.maxLevel' | t: { xp: s.xp } }}
+          }
+        </p>
+      </mat-card>
+      <mat-card appearance="outlined" class="stat">
+        <p class="label">{{ 'challenges.effectiveness' | t }}</p>
+        <p class="value">{{ s.retosSuperados }} / {{ s.retosTotales }}</p>
+        <p class="sub">{{ 'challenges.effectivenessText' | t: { done: s.retosSuperados, total: s.retosTotales } }}</p>
+      </mat-card>
+      <mat-card appearance="outlined" class="stat">
+        <p class="label">{{ 'challenges.protected' | t }}</p>
+        <p class="value">{{ s.dineroBlindado | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</p>
+        <p class="sub">{{ 'challenges.protectedText' | t }}</p>
+      </mat-card>
+      <mat-card appearance="outlined" class="stat">
+        <p class="label">{{ 'challenges.streak' | t }}</p>
+        <p class="value"><mat-icon class="fire" aria-hidden="true">local_fire_department</mat-icon>{{ (s.racha === 1 ? 'challenges.streakDaysOne' : 'challenges.streakDays') | t: { days: s.racha } }}</p>
+        <p class="sub">{{ 'challenges.streakText' | t }}</p>
+      </mat-card>
+    </section>
+
+    <!-- US26: active challenges and their progress -->
+    <section class="block" aria-labelledby="active-title">
+      <h2 id="active-title">{{ 'challenges.active' | t }}</h2>
+      <ul class="cards">
+        @for (p of s.activos; track p.idUsuarioDesafio) {
+          <li>
+            <mat-card appearance="outlined" class="challenge">
+              <div class="head">
+                <mat-icon class="type" aria-hidden="true">{{ icon(p.tipo) }}</mat-icon>
+                <div class="titles">
+                  <h3>{{ p.titulo }}</h3>
+                  <span class="badge" [class.official]="p.oficial">{{ (p.oficial ? 'challenges.official' : 'challenges.personal') | t }}</span>
+                </div>
+              </div>
+              <p class="desc">{{ p.descripcion }}</p>
+              <p class="day"><strong>{{ 'challenges.dayOf' | t: { day: p.diaActual, total: p.duracionDias } }}</strong> · {{ p.porcentaje | number: '1.0-0' : loc }}%</p>
+              <mat-progress-bar mode="determinate" [value]="p.porcentaje"
+                                [attr.aria-label]="('challenges.dayOf' | t: { day: p.diaActual, total: p.duracionDias }) + ': ' + p.titulo" />
+              <p class="meta">
+                {{ 'challenges.estimated' | t: { saved: (p.ahorroEstimado | currency: 'PEN' : 'S/ ' : '1.2-2' : loc) ?? '', goal: (p.montoObjetivo | currency: 'PEN' : 'S/ ' : '1.2-2' : loc) ?? '' } }}
+              </p>
+              <p class="meta">
+                {{ (p.diasRestantes === 1 ? 'challenges.daysLeftOne' : 'challenges.daysLeft') | t: { days: p.diasRestantes } }}
+                @if (p.puntosRecompensa > 0) { · {{ 'challenges.reward' | t: { points: p.puntosRecompensa } }} }
+              </p>
+              <div class="actions">
+                @if (p.registradoHoy) {
+                  <span class="done" role="status"><mat-icon aria-hidden="true">check_circle</mat-icon>{{ 'challenges.doneToday' | t }}</span>
+                } @else {
+                  <button mat-flat-button (click)="registerProgress(p)" [disabled]="busy() === p.idUsuarioDesafio"
+                          [attr.aria-label]="('challenges.registerProgress' | t) + ': ' + p.titulo">
+                    <mat-icon aria-hidden="true">task_alt</mat-icon>{{ 'challenges.registerProgress' | t }}
+                  </button>
+                }
+                <button mat-button (click)="abandon(p)" [attr.aria-label]="('challenges.abandon' | t) + ': ' + p.titulo">
+                  {{ 'challenges.abandon' | t }}
+                </button>
+              </div>
+            </mat-card>
+          </li>
+        } @empty {
+          <li class="empty">{{ 'challenges.noActive' | t }}</li>
+        }
+      </ul>
+    </section>
+
+    <!-- US27, US28: official challenges to join, with the missing requirements -->
+    <section class="block" aria-labelledby="available-title">
+      <h2 id="available-title">{{ 'challenges.available' | t }}</h2>
+      <ul class="cards">
+        @for (c of availableToShow(); track c.idDesafio) {
+          <li>
+            <mat-card appearance="outlined" class="challenge">
+              <div class="head">
+                <mat-icon class="type" aria-hidden="true">{{ icon(c.tipo) }}</mat-icon>
+                <div class="titles">
+                  <h3>{{ c.titulo }}</h3>
+                  <span class="badge official">{{ 'challenges.reward' | t: { points: c.puntosRecompensa } }}</span>
+                </div>
+              </div>
+              <p class="desc">{{ c.descripcion }}</p>
+              <p class="meta">
+                {{ (c.duracionDias === 1 ? 'challenges.availableInfoOne' : 'challenges.availableInfo') | t: { days: c.duracionDias, goal: (c.montoObjetivo | currency: 'PEN' : 'S/ ' : '1.2-2' : loc) ?? '' } }}
+              </p>
+              <p class="meta">
+                {{ 'challenges.window' | t: { from: (c.fechaInicio | date: 'mediumDate' : 'UTC' : loc) ?? '', to: (c.fechaFin | date: 'mediumDate' : 'UTC' : loc) ?? '' } }}
+                · {{ 'challenges.participants' | t: { count: c.participantes } }}
+              </p>
+              @if (c.puedeUnirse) {
+                <div class="actions">
+                  <button mat-flat-button (click)="join(c)" [disabled]="busy() === c.idDesafio"
+                          [attr.aria-label]="('challenges.join' | t) + ': ' + c.titulo">
+                    <mat-icon aria-hidden="true">group_add</mat-icon>{{ 'challenges.join' | t }}
+                  </button>
+                </div>
+              } @else {
+                <!-- US28: why the user cannot join -->
+                <div class="missing" role="note">
+                  <p><mat-icon aria-hidden="true">info</mat-icon>{{ 'challenges.cannotJoin' | t }}</p>
+                  <ul>
+                    @for (reason of c.requisitosFaltantes; track reason) {
+                      <li>{{ reason }}</li>
+                    }
+                  </ul>
+                </div>
+              }
+            </mat-card>
+          </li>
+        } @empty {
+          <li class="empty">{{ 'challenges.noAvailable' | t }}</li>
+        }
+      </ul>
+    </section>
+
+    <!-- US30: medal showcase -->
+    <section class="block" aria-labelledby="medals-title">
+      <h2 id="medals-title">{{ 'challenges.medals' | t: { got: unlocked(), total: medals().length } }}</h2>
+      <ul class="medals">
+        @for (m of sortedMedals(); track m.idLogro) {
+          @let percent = medalPercent(m);
+          <li class="medal" [class.locked]="!m.desbloqueada">
+            <mat-icon class="badge-icon" aria-hidden="true">{{ m.desbloqueada ? 'emoji_events' : 'lock' }}</mat-icon>
+            <p class="name">{{ m.nombre }}</p>
+            <p class="desc">{{ m.descripcion }}</p>
+            <p class="points">+{{ m.puntos }} pts</p>
+            @if (m.desbloqueada) {
+              <button mat-stroked-button (click)="share(m)" [attr.aria-label]="('challenges.share' | t) + ': ' + m.nombre">
+                <mat-icon aria-hidden="true">share</mat-icon>{{ 'challenges.share' | t }}
+              </button>
+            } @else if (percent !== null) {
+              <mat-progress-bar mode="determinate" [value]="percent"
+                                [attr.aria-label]="m.nombre + ': ' + m.avanceActual + ' / ' + m.avanceMeta" />
+              <p class="progress">{{ m.avanceActual }} / {{ m.avanceMeta }}</p>
+            } @else {
+              <p class="progress">{{ 'challenges.locked' | t }}</p>
+            }
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- History: completed, expired and abandoned -->
+    @if (s.historial.length) {
+      <section class="block" aria-labelledby="history-title">
+        <h2 id="history-title">{{ 'challenges.history' | t }}</h2>
+        <ul class="history">
+          @for (p of s.historial; track p.idUsuarioDesafio) {
+            <li>
+              <mat-icon aria-hidden="true" [class]="'state-' + p.estadoDesafio">
+                {{ p.estadoDesafio === 'COMPLETADO' ? 'emoji_events' : p.estadoDesafio === 'VENCIDO' ? 'event_busy' : 'flag' }}
+              </mat-icon>
+              <span class="h-title">{{ p.titulo }}</span>
+              <span class="h-state">{{ 'challengeState.' + p.estadoDesafio | t }} · {{ 'challenges.dayOf' | t: { day: p.diaActual, total: p.duracionDias } }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  }
+</section>
