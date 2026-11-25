@@ -13,7 +13,7 @@
     </button>
   </header>
 
-  @if (loading()) {
+  @if (loading() || refreshing()) {
     <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
   }
   @if (loadError()) {

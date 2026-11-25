@@ -1,5 +1,5 @@
-import { challengeIcon, levelProgress, medalProgress, shareLinks, shareText } from './challenges';
-import { Medal } from './models';
+import { addActive, applyProgress, challengeIcon, levelProgress, medalProgress, moveToHistory, shareLinks, shareText } from './challenges';
+import { ChallengeSummary, Medal, Participation } from './models';
 
 const medal = (actual: number | null, meta: number | null): Medal => ({
   idLogro: 1, nombre: 'Constante', descripcion: '', puntos: 30, desbloqueada: false, avanceActual: actual, avanceMeta: meta,
@@ -32,5 +32,46 @@ describe('challenges center', () => {
   it('uses an icon for each type of challenge', () => {
     expect(challengeIcon('sin_delivery')).toBe('delivery_dining');
     expect(challengeIcon(null)).toBe('flag');
+  });
+});
+
+const participation = (id: number, dia: number, duracion: number): Participation => ({
+  idUsuarioDesafio: id, idDesafio: id, titulo: 'R' + id, descripcion: '', tipo: null, oficial: true, diaActual: dia,
+  duracionDias: duracion, porcentaje: 0, ahorroEstimado: 0, montoObjetivo: 70, puntosRecompensa: 50,
+  estadoDesafio: 'EN_PROGRESO', registradoHoy: false, fechaFin: '2026-12-31', diasRestantes: 10,
+});
+const summary = (activos: Participation[]): ChallengeSummary => ({
+  nivel: 1, nombreNivel: 'principiante', xp: 0, xpInicioNivel: 0, xpSiguienteNivel: 100, retosSuperados: 0,
+  retosTotales: activos.length, dineroBlindado: 0, racha: 0, activos, historial: [],
+});
+
+describe('instant updates of the challenges center', () => {
+  it('moves the day forward right after registering the progress', () => {
+    const next = applyProgress(summary([participation(1, 4, 7)]), 1,
+      { xpGanado: 20, diaActual: 5, duracionDias: 7, completado: false, puntosRecompensa: 0, logrosDesbloqueados: [] });
+    expect(next.activos[0].diaActual).toBe(5);
+    expect(next.activos[0].registradoHoy).toBe(true);
+    expect(next.activos[0].porcentaje).toBe(71);
+    expect(next.activos[0].ahorroEstimado).toBe(50);
+    expect(next.xp).toBe(20);
+  });
+
+  it('on the last day the challenge goes to the history with its reward', () => {
+    const next = applyProgress(summary([participation(1, 6, 7)]), 1,
+      { xpGanado: 20, diaActual: 7, duracionDias: 7, completado: true, puntosRecompensa: 50, logrosDesbloqueados: [] });
+    expect(next.activos).toEqual([]);
+    expect(next.historial[0].estadoDesafio).toBe('COMPLETADO');
+    expect(next.retosSuperados).toBe(1);
+    expect(next.dineroBlindado).toBe(70);
+    expect(next.xp).toBe(70);
+  });
+
+  it('adds a joined challenge and moves an abandoned one to the history', () => {
+    const joined = addActive(summary([]), participation(2, 0, 5));
+    expect(joined.activos.map((p) => p.idUsuarioDesafio)).toEqual([2]);
+    expect(joined.retosTotales).toBe(1);
+    const abandoned = moveToHistory(joined, { ...participation(2, 0, 5), estadoDesafio: 'ABANDONADO' });
+    expect(abandoned.activos).toEqual([]);
+    expect(abandoned.historial[0].estadoDesafio).toBe('ABANDONADO');
   });
 });

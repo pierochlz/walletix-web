@@ -11,7 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { filter, forkJoin, of, switchMap } from 'rxjs';
 import { apiErrorMessage } from '../../core/api-error';
 import { AuthService } from '../../core/auth.service';
-import { challengeIcon, levelProgress, medalProgress } from '../../core/challenges';
+import { addActive, applyProgress, challengeIcon, levelProgress, medalProgress, moveToHistory } from '../../core/challenges';
 import { ChallengesService } from '../../core/challenges.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
@@ -42,6 +42,7 @@ export class ChallengesPage implements OnInit {
   readonly available = signal<AvailableChallenge[]>([]);
   readonly medals = signal<Medal[]>([]);
   readonly loading = signal(true);
+  readonly refreshing = signal(false); // thin bar while the rest of the data is reloaded in the background
   readonly loadError = signal<string | null>(null);
   readonly busy = signal<number | null>(null); // id of the challenge being saved (disables its button)
 
@@ -68,6 +69,7 @@ export class ChallengesPage implements OnInit {
   }
 
   load(): void {
+    this.refreshing.set(true);
     // First the summary (it unlocks the new medals), then the rest: so the medals are never checked twice at once
     this.service
       .summary()
@@ -78,11 +80,13 @@ export class ChallengesPage implements OnInit {
         this.available.set(available);
         this.medals.set(medals);
         this.loading.set(false);
+        this.refreshing.set(false);
         this.loadError.set(null);
         this.afterChange();
       },
       error: (err) => {
         this.loading.set(false);
+        this.refreshing.set(false);
         this.loadError.set(apiErrorMessage(err, this.i18n.t('app.connectionError')));
       },
     });
@@ -99,6 +103,7 @@ export class ChallengesPage implements OnInit {
     this.service.registerProgress(participation.idUsuarioDesafio).subscribe({
       next: (result) => {
         this.busy.set(null);
+        this.updateNow((s) => applyProgress(s, participation.idUsuarioDesafio, result)); // the card changes at once
         this.celebrate(participation, result);
         this.load();
       },
@@ -141,8 +146,9 @@ export class ChallengesPage implements OnInit {
   join(challenge: AvailableChallenge): void {
     this.busy.set(challenge.idDesafio);
     this.service.join(challenge.idDesafio).subscribe({
-      next: () => {
+      next: (joined) => {
         this.busy.set(null);
+        this.updateNow((s) => addActive(s, joined));
         this.snackBar.open(this.i18n.t('challenges.joined', { title: challenge.titulo }), 'OK', { duration: 4000 });
         this.load();
       },
@@ -164,7 +170,13 @@ export class ChallengesPage implements OnInit {
         filter((confirmed) => confirmed === true),
         switchMap(() => this.service.abandon(participation.idUsuarioDesafio)),
       )
-      .subscribe({ next: () => this.load(), error: (err) => this.showError(err) });
+      .subscribe({
+        next: (abandoned) => {
+          this.updateNow((s) => moveToHistory(s, abandoned));
+          this.load();
+        },
+        error: (err) => this.showError(err),
+      });
   }
 
   create(): void {
@@ -173,9 +185,15 @@ export class ChallengesPage implements OnInit {
       .afterClosed()
       .pipe(filter((created) => !!created))
       .subscribe((created: Participation) => {
+        this.updateNow((s) => addActive(s, created));
         this.snackBar.open(this.i18n.t('challenges.createdOk', { title: created.titulo }), 'OK', { duration: 4000 });
         this.load();
       });
+  }
+
+  private updateNow(change: (summary: ChallengeSummary) => ChallengeSummary): void {
+    const current = this.summary();
+    if (current) this.summary.set(change(current));
   }
 
   share(medal: Medal): void {

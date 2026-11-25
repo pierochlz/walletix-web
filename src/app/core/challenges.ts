@@ -1,4 +1,4 @@
-import { ChallengeSummary, Medal } from './models';
+import { ChallengeSummary, Medal, Participation, ProgressResult } from './models';
 
 // Pure logic of the challenges center (no Angular), so it can be unit tested.
 
@@ -53,4 +53,44 @@ export function shareLinks(text: string, url: string = SHARE_URL): { network: st
     { network: 'X', icon: 'alternate_email', href: `https://twitter.com/intent/tweet?text=${t}&url=${u}` },
     { network: 'Facebook', icon: 'thumb_up', href: `https://www.facebook.com/sharer/sharer.php?u=${u}&quote=${t}` },
   ];
+}
+
+// ---- Instant updates: the screen changes with the API answer, without waiting for the full reload ----
+// (in production the full reload takes a few seconds; the rest of the data is refreshed in the background)
+
+// After "Register today's progress"
+export function applyProgress(summary: ChallengeSummary, idUsuarioDesafio: number, result: ProgressResult): ChallengeSummary {
+  const current = summary.activos.find((p) => p.idUsuarioDesafio === idUsuarioDesafio);
+  if (!current) return summary;
+  const updated: Participation = {
+    ...current,
+    diaActual: result.diaActual,
+    porcentaje: Math.min(100, Math.round((result.diaActual / result.duracionDias) * 100)),
+    ahorroEstimado: Math.round(((current.montoObjetivo * Math.min(result.diaActual, result.duracionDias)) / result.duracionDias) * 100) / 100,
+    registradoHoy: true,
+    estadoDesafio: result.completado ? 'COMPLETADO' : current.estadoDesafio,
+  };
+  const others = summary.activos.filter((p) => p.idUsuarioDesafio !== idUsuarioDesafio);
+  return {
+    ...summary,
+    xp: summary.xp + result.xpGanado + result.puntosRecompensa,
+    activos: result.completado ? others : summary.activos.map((p) => (p.idUsuarioDesafio === idUsuarioDesafio ? updated : p)),
+    historial: result.completado ? [updated, ...summary.historial] : summary.historial,
+    retosSuperados: summary.retosSuperados + (result.completado ? 1 : 0),
+    dineroBlindado: summary.dineroBlindado + (result.completado ? current.montoObjetivo : 0),
+  };
+}
+
+// After joining a challenge or creating a personal one
+export function addActive(summary: ChallengeSummary, participation: Participation): ChallengeSummary {
+  return { ...summary, activos: [participation, ...summary.activos], retosTotales: summary.retosTotales + 1 };
+}
+
+// After abandoning: the challenge goes to the history
+export function moveToHistory(summary: ChallengeSummary, participation: Participation): ChallengeSummary {
+  return {
+    ...summary,
+    activos: summary.activos.filter((p) => p.idUsuarioDesafio !== participation.idUsuarioDesafio),
+    historial: [participation, ...summary.historial],
+  };
 }
