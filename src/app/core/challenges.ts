@@ -1,4 +1,4 @@
-import { ChallengeSummary, Medal, Participation, ProgressResult } from './models';
+import { ChallengeSummary, Expense, Medal, Participation, ProgressResult } from './models';
 
 // Pure logic of the challenges center (no Angular), so it can be unit tested.
 
@@ -93,4 +93,19 @@ export function moveToHistory(summary: ChallengeSummary, participation: Particip
     activos: summary.activos.filter((p) => p.idUsuarioDesafio !== participation.idUsuarioDesafio),
     historial: [participation, ...summary.historial],
   };
+}
+
+// ---- Challenges verified with the registered expenses ----
+// The API checks these types with the expenses: an expense that breaks the challenge makes that day not count.
+// "No impulse purchases" and "Free saving" cannot be detected with data, so they stay honor-based.
+const VERIFIED_TYPES = ['sin_delivery', 'sin_gastos_hormiga', 'transporte_inteligente'];
+
+export function verificationKey(type: string | null | undefined): string {
+  return type && VERIFIED_TYPES.includes(type) ? 'challenges.verified.' + type : 'challenges.honor';
+}
+
+// Budget alert and challenge warning of a saved expense, in one message
+export function expenseWarnings(expense: Expense | null | undefined): string | null {
+  const warnings = [expense?.alertaPresupuesto, expense?.avisoReto].filter((w): w is string => !!w);
+  return warnings.length ? warnings.join(' · ') : null;
 }

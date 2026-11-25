@@ -11,7 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { filter, forkJoin, of, switchMap } from 'rxjs';
 import { apiErrorMessage } from '../../core/api-error';
 import { AuthService } from '../../core/auth.service';
-import { addActive, applyProgress, challengeIcon, levelProgress, medalProgress, moveToHistory } from '../../core/challenges';
+import { addActive, applyProgress, challengeIcon, levelProgress, medalProgress, moveToHistory, verificationKey } from '../../core/challenges';
 import { ChallengesService } from '../../core/challenges.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
@@ -62,6 +62,7 @@ export class ChallengesPage implements OnInit {
     [...this.medals()].sort((a, b) => Number(b.desbloqueada) - Number(a.desbloqueada) || (medalProgress(b) ?? -1) - (medalProgress(a) ?? -1)),
   );
   readonly icon = challengeIcon;
+  readonly verification = verificationKey;
   readonly medalPercent = medalProgress;
 
   ngOnInit(): void {
@@ -113,6 +114,15 @@ export class ChallengesPage implements OnInit {
         if (err instanceof HttpErrorResponse && err.status === 409) {
           this.openMessage({ icon: 'schedule', title: 'challenges.alreadyTitle', text: 'challenges.alreadyText', accept: 'challenges.understood' });
           this.load();
+        } else if (err instanceof HttpErrorResponse && err.status === 422) {
+          // Verified with the expenses: today there is an expense that breaks the challenge
+          this.openMessage({
+            icon: 'block',
+            title: 'challenges.brokenTitle',
+            text: 'challenges.brokenText',
+            textParams: { reason: apiErrorMessage(err, this.i18n.t('form.error')) },
+            accept: 'challenges.understood',
+          });
         } else {
           this.showError(err);
         }

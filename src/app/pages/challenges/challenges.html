@@ -68,6 +68,7 @@
                 </div>
               </div>
               <p class="desc">{{ p.descripcion }}</p>
+              <p class="rule"><mat-icon aria-hidden="true">{{ verification(p.tipo) === 'challenges.honor' ? 'handshake' : 'fact_check' }}</mat-icon>{{ verification(p.tipo) | t }}</p>
               <p class="day"><strong>{{ 'challenges.dayOf' | t: { day: p.diaActual, total: p.duracionDias } }}</strong> · {{ p.porcentaje | number: '1.0-0' : loc }}%</p>
               <mat-progress-bar mode="determinate" [value]="p.porcentaje"
                                 [attr.aria-label]="('challenges.dayOf' | t: { day: p.diaActual, total: p.duracionDias }) + ': ' + p.titulo" />
@@ -114,6 +115,7 @@
                 </div>
               </div>
               <p class="desc">{{ c.descripcion }}</p>
+              <p class="rule"><mat-icon aria-hidden="true">{{ verification(c.tipo) === 'challenges.honor' ? 'handshake' : 'fact_check' }}</mat-icon>{{ verification(c.tipo) | t }}</p>
               <p class="meta">
                 {{ (c.duracionDias === 1 ? 'challenges.availableInfoOne' : 'challenges.availableInfo') | t: { days: c.duracionDias, goal: (c.montoObjetivo | currency: 'PEN' : 'S/ ' : '1.2-2' : loc) ?? '' } }}
               </p>

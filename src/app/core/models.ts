@@ -24,6 +24,7 @@ export interface Expense {
   metodoPagoGasto: string;
   fijoGasto: boolean;
   alertaPresupuesto?: string; // US15: only in the response when the expense goes over the monthly budget
+  avisoReto?: string; // only in the response when the expense breaks a challenge in progress (that day is lost)
 }
 
 export interface Income {

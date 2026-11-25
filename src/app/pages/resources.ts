@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { expenseWarnings } from '../core/challenges';
 import { AuthService } from '../core/auth.service';
 import { LookupStore } from '../core/lookup.store';
 import { CATEGORY_COLORS, DEFAULT_CATEGORY_ICON } from '../core/category-icons';
@@ -60,7 +61,8 @@ export class ExpensesPage {
       this.notifications.refresh();
     },
     // US15: the API answers with "alertaPresupuesto" when the expense goes over the monthly budget
-    warningFromResponse: (response) => (response as Expense | null)?.alertaPresupuesto ?? null,
+    // ...and "avisoReto" when it breaks a challenge in progress (e.g. a delivery during "No delivery days")
+    warningFromResponse: (response) => expenseWarnings(response as Expense | null),
     fields: [
       { key: 'descripcionGasto', label: 'expenses.description', type: 'text', required: true, maxLength: 100 },
       { key: 'montoGasto', label: 'expenses.amount', type: 'number', required: true, min: 0.01, format: 'currency' },

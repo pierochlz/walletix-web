@@ -1,4 +1,4 @@
-import { addActive, applyProgress, challengeIcon, levelProgress, medalProgress, moveToHistory, shareLinks, shareText } from './challenges';
+import { addActive, applyProgress, challengeIcon, expenseWarnings, levelProgress, medalProgress, moveToHistory, shareLinks, shareText, verificationKey } from './challenges';
 import { ChallengeSummary, Medal, Participation } from './models';
 
 const medal = (actual: number | null, meta: number | null): Medal => ({
@@ -73,5 +73,22 @@ describe('instant updates of the challenges center', () => {
     const abandoned = moveToHistory(joined, { ...participation(2, 0, 5), estadoDesafio: 'ABANDONADO' });
     expect(abandoned.activos).toEqual([]);
     expect(abandoned.historial[0].estadoDesafio).toBe('ABANDONADO');
+  });
+});
+
+describe('challenges verified with expenses', () => {
+  it('says which challenges are checked with the expenses and which are honor-based', () => {
+    expect(verificationKey('sin_delivery')).toBe('challenges.verified.sin_delivery');
+    expect(verificationKey('sin_gastos_hormiga')).toBe('challenges.verified.sin_gastos_hormiga');
+    expect(verificationKey('transporte_inteligente')).toBe('challenges.verified.transporte_inteligente');
+    expect(verificationKey('ahorro_libre')).toBe('challenges.honor');
+    expect(verificationKey(null)).toBe('challenges.honor');
+  });
+
+  it('joins the budget alert and the challenge warning of a saved expense', () => {
+    expect(expenseWarnings(null)).toBeNull();
+    expect(expenseWarnings({ alertaPresupuesto: 'Over budget' } as never)).toBe('Over budget');
+    expect(expenseWarnings({ avisoReto: 'Lost a day' } as never)).toBe('Lost a day');
+    expect(expenseWarnings({ alertaPresupuesto: 'Over budget', avisoReto: 'Lost a day' } as never)).toBe('Over budget · Lost a day');
   });
 });
