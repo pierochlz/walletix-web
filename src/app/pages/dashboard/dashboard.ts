@@ -13,6 +13,8 @@ import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Expense, Income, SavingGoal } from '../../core/models';
 import { onlyOwn } from '../../core/ownership';
 import { ExpenseService, IncomeService, SavingGoalService } from '../../core/resource.services';
+import { LearnService } from '../../core/learn.service';
+import { LearnDetail } from '../../core/models';
 
 @Component({
   selector: 'app-dashboard',
@@ -37,6 +39,10 @@ export class Dashboard implements OnInit {
   private incomeService = inject(IncomeService);
   private goalService = inject(SavingGoalService);
   private exchangeRateService = inject(ExchangeRateService);
+  private learnService = inject(LearnService);
+
+  // "Tip de 30 segundos" of the report: a different financial tip each day
+  readonly tip = signal<LearnDetail | null>(null);
 
   // What the API returns (for an ADMIN, the records of all users)
   private readonly allExpenses = signal<Expense[]>([]);
@@ -78,6 +84,7 @@ export class Dashboard implements OnInit {
   });
 
   ngOnInit(): void {
+    this.learnService.tipOfTheDay().subscribe({ next: (tip) => this.tip.set(tip), error: () => this.tip.set(null) });
     this.expenseService.list().subscribe({ next: (list) => this.allExpenses.set(list), error: () => {} });
     this.incomeService.list().subscribe({ next: (list) => this.allIncomes.set(list), error: () => {} });
     this.goalService.list().subscribe({ next: (list) => this.allGoals.set(list), error: () => {} });

@@ -86,3 +86,31 @@ h2 {
   margin-top: 6px;
   font: var(--mat-sys-label-medium);
 }
+
+/* "Tip de 30 segundos" */
+.tip {
+  display: flex;
+  flex-direction: row; /* mat-card stacks its content in a column */
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.tip > mat-icon {
+  flex: none;
+  color: #d97706;
+}
+
+.tip p {
+  margin: 0 0 6px;
+}
+
+.tip-title {
+  font: var(--mat-sys-title-small);
+}
+
+.tip-text {
+  color: var(--mat-sys-on-surface-variant);
+  white-space: pre-line;
+}

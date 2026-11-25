@@ -1,0 +1,109 @@
+<section class="page" aria-labelledby="learn-title">
+  <header class="page-header">
+    <h1 id="learn-title">
+      <mat-icon aria-hidden="true">school</mat-icon>
+      {{ 'learn.title' | t }}
+    </h1>
+    <p class="subtitle">{{ 'learn.subtitle' | t }}</p>
+  </header>
+
+  <!-- Search (user flow of the report: "Buscar consejos o temas…") -->
+  <mat-form-field appearance="outline" class="search" subscriptSizing="dynamic">
+    <mat-label>{{ 'learn.search' | t }}</mat-label>
+    <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+    <input matInput type="search" [ngModel]="search()" (ngModelChange)="onSearch($event)" maxlength="60" />
+    @if (search()) {
+      <button matSuffix mat-icon-button (click)="onSearch('')" [attr.aria-label]="'learn.clearSearch' | t">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+
+  <!-- Type of content -->
+  <mat-button-toggle-group class="tabs" [value]="tab()" (change)="tab.set($event.value)" [attr.aria-label]="'learn.type' | t" hideSingleSelectionIndicator>
+    <mat-button-toggle value="all">{{ 'learn.tab.all' | t }}</mat-button-toggle>
+    <mat-button-toggle value="lessons">{{ 'learn.tab.lessons' | t }}</mat-button-toggle>
+    <mat-button-toggle value="tips">{{ 'learn.tab.tips' | t }}</mat-button-toggle>
+    <mat-button-toggle value="favorites">
+      <mat-icon aria-hidden="true">star</mat-icon>{{ 'learn.tab.favorites' | t: { count: favoritesCount() } }}
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <!-- US31: categories -->
+  @if (categories().length > 1) {
+    <mat-chip-listbox class="categories" [attr.aria-label]="'learn.categories' | t">
+      <mat-chip-option [selected]="category() === null" (click)="selectCategory(null)">{{ 'learn.allCategories' | t }}</mat-chip-option>
+      @for (c of categories(); track c) {
+        <mat-chip-option [selected]="category() === c" (click)="selectCategory(c)">
+          {{ categoryLabel(c) ? (categoryLabel(c)! | t) : c }}
+        </mat-chip-option>
+      }
+    </mat-chip-listbox>
+  }
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
+  }
+  @if (loadError()) {
+    <p class="api-error" role="alert">{{ loadError() }}</p>
+  }
+
+  <ul class="cards" [attr.aria-busy]="loading()">
+    @for (item of shown(); track item.idMicroleccion) {
+      <li>
+        <mat-card appearance="outlined" class="item" [class.locked]="item.bloqueado">
+          <button class="open" (click)="open(item)"
+                  [attr.aria-label]="(item.bloqueado ? ('learn.lockedLabel' | t) + ': ' : '') + item.titulo">
+            <div class="head">
+              <mat-icon class="type" [class.tip]="item.tipo === 'tip'" aria-hidden="true">{{ icon(item) }}</mat-icon>
+              <div class="titles">
+                <h2>{{ item.titulo }}</h2>
+                <span class="badge">{{ categoryLabel(item.categoria) ? (categoryLabel(item.categoria)! | t) : item.categoria }}</span>
+              </div>
+            </div>
+            <p class="desc">{{ item.descripcion }}</p>
+            <p class="meta">
+              {{ (item.tipo === 'tip' ? 'learn.tip' : 'learn.lesson') | t }} ·
+              {{ 'learn.minutes' | t: { min: item.minutosLectura } }}
+              @if (item.tipo === 'leccion' && item.preguntas > 0) {
+                · {{ (item.preguntas === 1 ? 'learn.questionsOne' : 'learn.questions') | t: { count: item.preguntas } }}
+              }
+              @if (item.puntosRecompensa > 0 && !item.aprobado) {
+                · <strong>+{{ item.puntosRecompensa }} pts</strong>
+              }
+            </p>
+            @if (item.bloqueado) {
+              <p class="lock-hint"><mat-icon aria-hidden="true">lock</mat-icon>{{ item.condicion }}</p>
+            } @else if (item.aprobado) {
+              <p class="passed"><mat-icon aria-hidden="true">verified</mat-icon>{{ 'learn.passed' | t: { score: item.mejorPuntaje ?? 0 } }}</p>
+            } @else if (item.mejorPuntaje !== null) {
+              <p class="meta">{{ 'learn.bestScore' | t: { score: item.mejorPuntaje } }}</p>
+            }
+          </button>
+          <button mat-icon-button class="star" (click)="toggleFavorite(item, $event)" [disabled]="busy() === item.idMicroleccion"
+                  [attr.aria-pressed]="item.favorito"
+                  [attr.aria-label]="((item.favorito ? 'learn.removeFavorite' : 'learn.addFavorite') | t) + ': ' + item.titulo"
+                  [matTooltip]="(item.favorito ? 'learn.removeFavorite' : 'learn.addFavorite') | t">
+            <mat-icon [class.on]="item.favorito">{{ item.favorito ? 'star' : 'star_border' }}</mat-icon>
+          </button>
+        </mat-card>
+      </li>
+    } @empty {
+      @if (!loading()) {
+        <li class="empty" role="status">
+          @if (search()) {
+            <!-- Unhappy path of the report: "No encontramos consejos para «criptomonedas»" -->
+            <p>{{ 'learn.noResults' | t: { text: search() } }}</p>
+            <button mat-stroked-button (click)="clearSearch()">{{ 'learn.seeAll' | t }}</button>
+          } @else if (tab() === 'favorites') {
+            <p>{{ 'learn.noFavorites' | t }}</p>
+          } @else {
+            <p>{{ 'learn.empty' | t }}</p>
+          }
+        </li>
+      }
+    }
+  </ul>
+
+  <p class="footnote"><a routerLink="/challenges">{{ 'learn.unlockHint' | t }}</a></p>
+</section>

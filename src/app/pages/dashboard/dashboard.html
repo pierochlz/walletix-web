@@ -25,6 +25,17 @@
   </mat-card>
 </section>
 
+@if (tip(); as today) {
+  <mat-card appearance="outlined" class="tip" role="note" [attr.aria-label]="'dashboard.tipTitle' | t">
+    <mat-icon aria-hidden="true">lightbulb</mat-icon>
+    <div>
+      <p class="tip-title">{{ 'dashboard.tipTitle' | t }} · {{ today.resumen.titulo }}</p>
+      <p class="tip-text">{{ today.contenido }}</p>
+      <a routerLink="/learn">{{ 'dashboard.moreTips' | t }}</a>
+    </div>
+  </mat-card>
+}
+
 <div class="columns">
   <!-- Savings goals with progress bars -->
   <mat-card appearance="outlined">

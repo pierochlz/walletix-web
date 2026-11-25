@@ -174,6 +174,70 @@ export interface PersonalChallenge {
   montoObjetivo: number;
 }
 
+// ---- Learn section (US31-US35) ----
+
+// Card of the list: lesson ("leccion") or tip ("tip"). If it is locked, "condicion" says how to unlock it (US33)
+export interface LearnItem {
+  idMicroleccion: number;
+  titulo: string;
+  descripcion: string;
+  categoria: string;
+  tipo: 'leccion' | 'tip' | string;
+  minutosLectura: number;
+  preguntas: number;
+  puntosRecompensa: number;
+  bloqueado: boolean;
+  condicion: string | null;
+  favorito: boolean;
+  aprobado: boolean;
+  mejorPuntaje: number | null;
+}
+
+// Quiz question WITHOUT the correct answer (the API grades the quiz)
+export interface QuizQuestion {
+  idPregunta: number;
+  enunciado: string;
+  opciones: { letra: string; texto: string }[];
+}
+
+// An opened lesson or tip (US34)
+export interface LearnDetail {
+  resumen: LearnItem;
+  contenido: string;
+  tituloQuiz: string;
+  puntajeAprobatorio: number;
+  preguntas: QuizQuestion[];
+}
+
+// Result of the quiz (US35)
+export interface QuizFeedback {
+  idPregunta: number;
+  enunciado: string;
+  respuestaUsuario: string;
+  respuestaCorrecta: string;
+  textoCorrecto: string;
+  acerto: boolean;
+  explicacion: string;
+}
+export interface QuizResult {
+  puntaje: number;
+  correctas: number;
+  total: number;
+  puntajeAprobatorio: number;
+  aprobado: boolean;
+  primeraVezAprobado: boolean;
+  puntosGanados: number;
+  logrosDesbloqueados: string[];
+  retroalimentacion: QuizFeedback[];
+}
+
+// Answer of the favorite toggle (US32)
+export interface FavoriteResult {
+  idMicroleccion: number;
+  favorito: boolean;
+  totalFavoritos: number;
+}
+
 // Body of POST /login and its response
 export interface LoginRequest {
   correo: string;

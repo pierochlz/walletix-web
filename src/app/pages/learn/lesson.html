@@ -1,0 +1,131 @@
+@let d = detail();
+@let r = result();
+
+<section class="page">
+  <a mat-button routerLink="/learn" class="back">
+    <mat-icon aria-hidden="true">arrow_back</mat-icon>{{ 'learn.back' | t }}
+  </a>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
+  }
+
+  @if (loadError()) {
+    <!-- US33: locked content shows the condition to unlock it -->
+    <mat-card appearance="outlined" class="locked-card" role="alert">
+      <mat-icon aria-hidden="true">{{ locked() ? 'lock' : 'error' }}</mat-icon>
+      <div>
+        <h1>{{ (locked() ? 'learn.lockedTitle' : 'form.error') | t }}</h1>
+        <p>{{ loadError() }}</p>
+        @if (locked()) {
+          <a mat-flat-button routerLink="/challenges">{{ 'learn.goChallenges' | t }}</a>
+        }
+      </div>
+    </mat-card>
+  }
+
+  @if (d) {
+    <article aria-labelledby="lesson-title">
+      <header class="lesson-header">
+        <mat-icon class="type" [class.tip]="d.resumen.tipo === 'tip'" aria-hidden="true">{{ icon(d.resumen) }}</mat-icon>
+        <div class="titles">
+          <h1 id="lesson-title">{{ d.resumen.titulo }}</h1>
+          <p class="meta">
+            {{ categoryLabel(d.resumen.categoria) ? (categoryLabel(d.resumen.categoria)! | t) : d.resumen.categoria }} ·
+            {{ (d.resumen.tipo === 'tip' ? 'learn.tip' : 'learn.lesson') | t }} ·
+            {{ 'learn.minutes' | t: { min: d.resumen.minutosLectura } }}
+          </p>
+        </div>
+        <button mat-icon-button (click)="toggleFavorite()" [disabled]="favoriteBusy()" [attr.aria-pressed]="d.resumen.favorito"
+                [attr.aria-label]="(d.resumen.favorito ? 'learn.removeFavorite' : 'learn.addFavorite') | t">
+          <mat-icon [class.on]="d.resumen.favorito">{{ d.resumen.favorito ? 'star' : 'star_border' }}</mat-icon>
+        </button>
+      </header>
+
+      <p class="lead">{{ d.resumen.descripcion }}</p>
+      <div class="content">
+        @for (p of paragraphs(); track $index) {
+          <p>{{ p }}</p>
+        }
+      </div>
+    </article>
+
+    <!-- US35: quiz after the micro-lesson -->
+    @if (d.resumen.tipo === 'leccion' && d.preguntas.length > 0) {
+      <section class="quiz" aria-labelledby="quiz-title">
+        <h2 id="quiz-title"><mat-icon aria-hidden="true">quiz</mat-icon>{{ d.tituloQuiz }}</h2>
+        <p class="meta">
+          {{ 'learn.quizInfo' | t: { count: d.preguntas.length, min: d.puntajeAprobatorio } }}
+          @if (d.resumen.puntosRecompensa > 0 && !d.resumen.aprobado) {
+            · {{ 'learn.quizReward' | t: { points: d.resumen.puntosRecompensa } }}
+          }
+          @if (d.resumen.aprobado) {
+            · {{ 'learn.alreadyPassed' | t }}
+          }
+        </p>
+
+        @if (!r) {
+          <ol class="questions">
+            @for (q of d.preguntas; track q.idPregunta; let i = $index) {
+              <li>
+                <fieldset>
+                  <legend>{{ q.enunciado }}</legend>
+                  <mat-radio-group [value]="answers()[q.idPregunta]" (change)="choose(q.idPregunta, $event.value)">
+                    @for (o of q.opciones; track o.letra) {
+                      <mat-radio-button [value]="o.letra">{{ o.texto }}</mat-radio-button>
+                    }
+                  </mat-radio-group>
+                </fieldset>
+              </li>
+            }
+          </ol>
+          <div class="actions">
+            <button mat-flat-button (click)="send()" [disabled]="!canSend()">
+              <mat-icon aria-hidden="true">send</mat-icon>{{ 'learn.send' | t }}
+            </button>
+            <span class="meta" aria-live="polite">{{ 'learn.answered' | t: { done: answeredCount(), total: d.preguntas.length } }}</span>
+          </div>
+        } @else {
+          <!-- Score and feedback -->
+          <div #resultBox class="result" [class.ok]="r.aprobado" tabindex="-1" role="status">
+            <mat-icon aria-hidden="true">{{ r.aprobado ? 'celebration' : 'refresh' }}</mat-icon>
+            <div>
+              <p class="score">{{ 'learn.score' | t: { score: r.puntaje } }}</p>
+              <p>
+                {{ (r.aprobado ? 'learn.resultPassed' : 'learn.resultFailed') | t: { ok: r.correctas, total: r.total, min: r.puntajeAprobatorio } }}
+              </p>
+              @if (r.puntosGanados > 0) {
+                <p class="points">{{ 'learn.pointsEarned' | t: { points: r.puntosGanados } }}</p>
+              } @else if (r.aprobado && !r.primeraVezAprobado) {
+                <p class="meta">{{ 'learn.noPointsAgain' | t }}</p>
+              }
+              @for (logro of r.logrosDesbloqueados; track logro) {
+                <p class="points">🏅 {{ 'learn.medal' | t: { name: logro } }}</p>
+              }
+            </div>
+          </div>
+
+          <ol class="feedback">
+            @for (f of r.retroalimentacion; track f.idPregunta) {
+              <li [class.right]="f.acerto" [class.wrong]="!f.acerto">
+                <p class="q">
+                  <mat-icon aria-hidden="true">{{ f.acerto ? 'check_circle' : 'cancel' }}</mat-icon>
+                  <span>{{ f.enunciado }}</span>
+                  <span class="sr-only">{{ (f.acerto ? 'learn.right' : 'learn.wrong') | t }}</span>
+                </p>
+                @if (!f.acerto) {
+                  <p class="correct">{{ 'learn.correctAnswer' | t: { answer: f.textoCorrecto } }}</p>
+                }
+                <p class="why">{{ f.explicacion }}</p>
+              </li>
+            }
+          </ol>
+          <div class="actions">
+            <button mat-stroked-button (click)="retry()"><mat-icon aria-hidden="true">replay</mat-icon>{{ 'learn.retry' | t }}</button>
+            <button mat-flat-button (click)="back()">{{ 'learn.moreLessons' | t }}</button>
+          </div>
+        }
+      </section>
+    }
+  }
+</section>
