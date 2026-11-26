@@ -114,3 +114,116 @@ h2 {
   color: var(--mat-sys-on-surface-variant);
   white-space: pre-line;
 }
+
+/* US08: views */
+.views {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+  margin-bottom: 16px;
+}
+
+.stat.ant mat-icon {
+  color: #b45309;
+}
+
+.chart-card {
+  margin-bottom: 16px;
+}
+
+.section-title {
+  margin: 0 0 12px;
+}
+
+.range {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.range mat-form-field {
+  width: 210px;
+  max-width: 100%;
+}
+
+.averages {
+  margin-top: 4px;
+}
+
+.api-error {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.key {
+  display: flex;
+  gap: 16px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  font: var(--mat-sys-body-small);
+}
+
+.key li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.dot.income {
+  background: #16a34a;
+}
+
+.dot.expense {
+  background: #dc2626;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.flows {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.flows th,
+.flows td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.flows .num {
+  text-align: right;
+}
+
+.negative,
+.bad {
+  color: var(--mat-sys-error);
+}
+
+.good {
+  color: #15803d;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

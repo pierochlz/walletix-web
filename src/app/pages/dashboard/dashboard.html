@@ -1,5 +1,14 @@
 <h1 class="hello">{{ 'dashboard.hello' | t: { name: auth.user()?.nombreUsuario ?? '' } }}</h1>
 
+<!-- US08: views of the dashboard -->
+<mat-button-toggle-group class="views" [value]="view()" (change)="view.set($event.value)" [attr.aria-label]="'dashboard.views' | t" hideSingleSelectionIndicator>
+  <mat-button-toggle value="summary">{{ 'dashboard.viewSummary' | t }}</mat-button-toggle>
+  <mat-button-toggle value="compare">{{ 'dashboard.viewCompare' | t }}</mat-button-toggle>
+  <mat-button-toggle value="category">{{ 'dashboard.viewCategory' | t }}</mat-button-toggle>
+</mat-button-toggle-group>
+
+@if (view() === 'summary') {
+
 <!-- Summary cards -->
 <section class="stats" aria-label="Summary">
   <mat-card appearance="outlined" class="stat">
@@ -16,6 +25,13 @@
     <mat-icon aria-hidden="true">trending_down</mat-icon>
     <p class="label">{{ 'dashboard.monthExpense' | t }}</p>
     <p class="value">{{ monthExpense() | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale() }}</p>
+  </mat-card>
+  <!-- US06: ant expenses of the month (less than S/ 10, not fixed and not transport) -->
+  <mat-card appearance="outlined" class="stat ant">
+    <mat-icon aria-hidden="true">bug_report</mat-icon>
+    <p class="label">{{ 'dashboard.monthAnt' | t }}</p>
+    <p class="value">{{ monthAnt().total | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale() }}</p>
+    <small class="muted">{{ (monthAnt().count === 1 ? 'dashboard.antCountOne' : 'dashboard.antCount') | t: { count: monthAnt().count } }}</small>
   </mat-card>
   <mat-card appearance="outlined" class="stat">
     <mat-icon aria-hidden="true">emoji_events</mat-icon>
@@ -35,6 +51,21 @@
     </div>
   </mat-card>
 }
+
+<!-- US07: evolution of the balance -->
+<mat-card appearance="outlined" class="chart-card">
+  <mat-card-header>
+    <mat-card-title><h2>{{ 'dashboard.evolution' | t }}</h2></mat-card-title>
+    <mat-card-subtitle>{{ 'dashboard.evolutionHint' | t }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    @if (hasMovements()) {
+      <app-line-chart [points]="evolution()" [label]="'dashboard.evolution' | t" [format]="currency" color="#2563eb" />
+    } @else {
+      <p class="muted">{{ 'dashboard.noMovements' | t }} <a routerLink="/incomes">{{ 'nav.incomes' | t }}</a> · <a routerLink="/expenses">{{ 'nav.expenses' | t }}</a></p>
+    }
+  </mat-card-content>
+</mat-card>
 
 <div class="columns">
   <!-- Savings goals with progress bars -->
@@ -112,3 +143,111 @@
     }
   </mat-card-content>
 </mat-card>
+}
+
+@if (view() === 'compare') {
+  <!-- US09: income vs expenses in a range of months -->
+  <section class="panel" aria-labelledby="compare-title">
+    <h2 id="compare-title" class="section-title">{{ 'dashboard.compareTitle' | t }}</h2>
+    <form class="range" (ngSubmit)="applyRange()">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{ 'dashboard.from' | t }}</mat-label>
+        <input matInput type="month" name="from" [ngModel]="from()" (ngModelChange)="from.set($event)" [max]="maxMonth" required />
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{ 'dashboard.to' | t }}</mat-label>
+        <input matInput type="month" name="to" [ngModel]="to()" (ngModelChange)="to.set($event)" [max]="maxMonth" required />
+      </mat-form-field>
+      <button mat-flat-button type="submit">{{ 'dashboard.update' | t }}</button>
+      <button mat-stroked-button type="button" (click)="shortcut(3)">{{ 'dashboard.last3' | t }}</button>
+      <button mat-stroked-button type="button" (click)="shortcut(6)">{{ 'dashboard.last6' | t }}</button>
+    </form>
+    @if (rangeErrorKey()) {
+      <p class="api-error" role="alert">{{ rangeErrorKey()! | t }}</p>
+    }
+
+    <div class="stats averages">
+      <mat-card appearance="outlined" class="stat income">
+        <p class="label">{{ 'dashboard.avgIncome' | t }}</p>
+        <p class="value">{{ avgIncome() | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale() }}</p>
+      </mat-card>
+      <mat-card appearance="outlined" class="stat expense">
+        <p class="label">{{ 'dashboard.avgExpense' | t }}</p>
+        <p class="value">{{ avgExpense() | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale() }}</p>
+      </mat-card>
+    </div>
+
+    <mat-card appearance="outlined" class="chart-card">
+      <mat-card-content>
+        <ul class="key" aria-hidden="true">
+          <li><span class="dot income"></span>{{ 'dashboard.incomes' | t }}</li>
+          <li><span class="dot expense"></span>{{ 'dashboard.expenses' | t }}</li>
+        </ul>
+        <app-bar-chart [labels]="flowLabels()" [series]="flowSeries()" [label]="'dashboard.compareTitle' | t" [format]="currency" />
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Analytic table with the diagnosis of each month -->
+    <div class="table-wrap">
+      <table class="flows">
+        <caption class="sr-only">{{ 'dashboard.compareTitle' | t }}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'dashboard.month' | t }}</th>
+            <th scope="col" class="num">{{ 'dashboard.incomes' | t }}</th>
+            <th scope="col" class="num">{{ 'dashboard.expenses' | t }}</th>
+            <th scope="col" class="num">{{ 'dashboard.net' | t }}</th>
+            <th scope="col">{{ 'dashboard.diagnosis' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of flows(); track f.month) {
+            <tr>
+              <th scope="row">{{ monthLabel(f.month, true) }}</th>
+              <td class="num">{{ f.income | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale() }}</td>
+              <td class="num">{{ f.expense | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale() }}</td>
+              <td class="num" [class.negative]="f.net < 0">{{ f.net | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale() }}</td>
+              <td>
+                @if (f.income === 0 && f.expense === 0) {
+                  <span class="muted">{{ 'dashboard.diagnosisNone' | t }}</span>
+                } @else if (f.net >= 0) {
+                  <span class="good">{{ 'dashboard.diagnosisSaved' | t }}</span>
+                } @else {
+                  <span class="bad">{{ 'dashboard.diagnosisOverspent' | t }}</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}
+
+@if (view() === 'category') {
+  <!-- US10: distribution by category -->
+  <section class="panel" aria-labelledby="category-title">
+    <h2 id="category-title" class="section-title">{{ 'dashboard.categoryTitle' | t }}</h2>
+    <div class="range">
+      <mat-button-toggle-group [value]="categoryType()" (change)="categoryType.set($event.value)" [attr.aria-label]="'dashboard.categoryType' | t" hideSingleSelectionIndicator>
+        <mat-button-toggle value="expense">{{ 'dashboard.expenses' | t }}</mat-button-toggle>
+        <mat-button-toggle value="income">{{ 'dashboard.incomes' | t }}</mat-button-toggle>
+      </mat-button-toggle-group>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{ 'dashboard.month' | t }}</mat-label>
+        <input matInput type="month" [ngModel]="categoryMonth()" (ngModelChange)="$event && categoryMonth.set($event)" [max]="maxMonth" />
+      </mat-form-field>
+    </div>
+    <mat-card appearance="outlined" class="chart-card">
+      <mat-card-content>
+        @if (slices().length) {
+          <app-donut-chart [slices]="slices()" [format]="money"
+                           [label]="('dashboard.categoryTitle' | t) + ' · ' + monthLabel(categoryMonth(), true)"
+                           [centerLabel]="(categoryType() === 'expense' ? 'dashboard.totalExpense' : 'dashboard.totalIncome') | t" />
+        } @else {
+          <p class="muted">{{ (categoryType() === 'expense' ? 'dashboard.noExpensesMonth' : 'dashboard.noIncomesMonth') | t }}</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  </section>
+}
