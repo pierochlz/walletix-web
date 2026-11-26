@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import { maxTwoDecimals } from '../core/validators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -84,6 +85,8 @@ export class ResourceFormDialog {
       if (field.max !== undefined) validators.push(Validators.max(field.max));
       if (field.maxLength) validators.push(Validators.maxLength(field.maxLength));
       if (field.pattern) validators.push(Validators.pattern(field.pattern));
+      // Amounts in soles: at most 2 decimals (cents)
+      if (field.format === 'currency') validators.push(maxTwoDecimals);
       let initial = this.data.item?.[field.key] ?? this.data.initial?.[field.key] ?? (field.type === 'checkbox' ? false : null);
       // Old categories have an image URL: the gallery starts on the same generic icon the table shows
       if (field.type === 'icon') initial = categoryIcon(initial);
@@ -98,6 +101,7 @@ export class ResourceFormDialog {
     if (control.errors['required']) return this.i18n.t('form.required');
     if (control.errors['min']) return this.i18n.t('form.min', { min: this.limit(field, field.min) });
     if (control.errors['max']) return this.i18n.t('form.max', { max: this.limit(field, field.max) });
+    if (control.errors['cents']) return this.i18n.t('form.cents');
     return this.i18n.t('form.pattern');
   }
 

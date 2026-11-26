@@ -176,7 +176,9 @@
         <mat-form-field appearance="outline">
           <mat-label>{{ 'register.balance' | t }}</mat-label>
           <input matInput type="number" formControlName="saldoActualUsuario" min="0" step="any" required />
-          <mat-error>{{ 'form.min' | t: { min: 0 } }}</mat-error>
+          <mat-error>
+            {{ form.controls.saldoActualUsuario.hasError('cents') ? ('form.cents' | t) : ('form.min' | t: { min: 0 }) }}
+          </mat-error>
         </mat-form-field>
         @if (profileError()) {
           <p class="api-error full" role="alert">{{ profileError() }}</p>

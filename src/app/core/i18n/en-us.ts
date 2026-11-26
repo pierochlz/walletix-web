@@ -249,7 +249,7 @@ export const EN_US: Record<string, string> = {
   'challenges.days': 'days',
   'challenges.durationError': 'From 1 to 90 days',
   'challenges.goal': 'Savings goal (S/)',
-  'challenges.goalError': 'Greater than 0 and up to 1,000,000',
+  'challenges.goalError': 'Greater than 0, up to 1,000,000 and at most 2 decimals',
   'challenges.createButton': 'Create challenge',
   'challenges.summary': 'Summary of my challenges',
   'challenges.level': 'Level',
@@ -480,4 +480,6 @@ export const EN_US: Record<string, string> = {
   'preferences.notify.reto': 'Challenges (completed or lost days)',
   'preferences.notifyHint': 'It only affects the bell. The warning when you save an expense over your budget is still shown.',
   'notifications.choose': 'Choose which notifications to receive',
+  'form.cents': 'Use at most 2 decimals (cents)',
+  'profile.emailChanged': 'Your email changed. Sign in with the new email.',
 };

@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { maxTwoDecimals } from '../../core/validators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -89,7 +90,7 @@ export class CreateChallengeDialog {
     tipo: ['sin_delivery', Validators.required],
     titulo: ['', Validators.maxLength(30)],
     duracionDias: [7, [Validators.required, Validators.min(1), Validators.max(90)]],
-    montoObjetivo: [70, [Validators.required, Validators.min(0.01), Validators.max(1_000_000)]],
+    montoObjetivo: [70, [Validators.required, Validators.min(0.01), Validators.max(1_000_000), maxTwoDecimals]],
   });
 
   save(): void {

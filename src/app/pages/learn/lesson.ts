@@ -1,5 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, computed, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,6 +34,8 @@ export class LessonPage implements OnInit {
   readonly i18n = inject(I18nService);
 
   private route = inject(ActivatedRoute); // /learn/:id
+  private destroyRef = inject(DestroyRef);
+  private loadSub?: Subscription;
 
   readonly detail = signal<LearnDetail | null>(null);
   readonly loading = signal(true);
@@ -51,13 +55,26 @@ export class LessonPage implements OnInit {
   private resultBox = viewChild<ElementRef<HTMLElement>>('resultBox');
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    // Angular reuses this component when only the id changes (/learn/1 -> /learn/4 with Back/Forward):
+    // the id is read on every change, not once, so the page never shows the previous lesson
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => this.load(Number(params.get('id'))));
+  }
+
+  private load(id: number): void {
     // A typed address like /learn/abc goes back to the list instead of showing a technical error
     if (!Number.isInteger(id) || id <= 0) {
       this.router.navigate(['/learn']);
       return;
     }
-    this.service.open(id).subscribe({
+    // Start clean: no answers, result or error of the previous lesson
+    this.loadSub?.unsubscribe();
+    this.detail.set(null);
+    this.answers.set({});
+    this.result.set(null);
+    this.locked.set(false);
+    this.loadError.set(null);
+    this.loading.set(true);
+    this.loadSub = this.service.open(id).subscribe({
       next: (detail) => {
         this.detail.set(detail);
         this.loading.set(false);

@@ -249,7 +249,7 @@ export const ES_419: Record<string, string> = {
   'challenges.days': 'días',
   'challenges.durationError': 'De 1 a 90 días',
   'challenges.goal': 'Meta de ahorro (S/)',
-  'challenges.goalError': 'Mayor que 0 y hasta 1,000,000',
+  'challenges.goalError': 'Mayor que 0, hasta 1,000,000 y con máximo 2 decimales',
   'challenges.createButton': 'Crear reto',
   'challenges.summary': 'Resumen de mis retos',
   'challenges.level': 'Nivel',
@@ -480,4 +480,6 @@ export const ES_419: Record<string, string> = {
   'preferences.notify.reto': 'Retos (superados o días perdidos)',
   'preferences.notifyHint': 'Solo afecta a la campana. El aviso al guardar un gasto que supera tu presupuesto se sigue mostrando.',
   'notifications.choose': 'Elige qué notificaciones recibir',
+  'form.cents': 'Usa como máximo 2 decimales (céntimos)',
+  'profile.emailChanged': 'Tu correo cambió. Inicia sesión con el nuevo correo.',
 };

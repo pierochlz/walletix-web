@@ -10,6 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NotificationStore } from '../../core/notification.store';
 import { NotificationPreferences } from '../../core/models';
 import { forkJoin, of } from 'rxjs';
+import { maxTwoDecimals } from '../../core/validators';
 import { FormsModule } from '@angular/forms';
 import { Theme, THEMES, themeIcon, ThemeService } from '../../core/theme.service';
 import { Lang } from '../../core/i18n/i18n.service';
@@ -161,7 +162,7 @@ export class Profile implements OnInit {
     telefonoUsuario: ['', [Validators.required, Validators.pattern(/^9\d{8}$/)]],
     fechaNacimientoUsuario: ['', Validators.required],
     segmentoUsuario: ['', Validators.required],
-    saldoActualUsuario: [0, [Validators.required, Validators.min(0)]],
+    saldoActualUsuario: [0, [Validators.required, Validators.min(0), maxTwoDecimals]],
   });
 
   readonly passwordForm = this.fb.nonNullable.group({
@@ -198,6 +199,19 @@ export class Profile implements OnInit {
     const values = this.form.getRawValue();
     const body = { ...user, ...values, telefonoUsuario: Number(values.telefonoUsuario) };
     this.profileError.set(null);
+    // The session token is tied to the email: after changing it the old token is no longer valid.
+    // Instead of being sent to the login without explanation, the user is told why.
+    const emailChanged = values.correoUsuario.trim().toLowerCase() !== (user.correoUsuario ?? '').trim().toLowerCase();
+    if (emailChanged) {
+      this.auth.updateProfile(body).subscribe({
+        next: () => {
+          this.snackBar.open(this.i18n.t('profile.emailChanged'), 'OK', { duration: 8000 });
+          this.auth.logout();
+        },
+        error: (err) => this.profileError.set(apiErrorMessage(err, this.i18n.t('form.error'))),
+      });
+      return;
+    }
     this.auth
       .updateProfile(body)
       .pipe(switchMap(() => this.auth.loadCurrentUser())) // reload my data from the API
