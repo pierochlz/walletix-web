@@ -137,13 +137,18 @@ export class ChallengesPage implements OnInit {
         icon: 'emoji_events',
         tone: 'success',
         title: 'challenges.completedTitle',
-        text: result.puntosRecompensa > 0 ? 'challenges.completedText' : 'challenges.completedTextPersonal',
+        text: (result.puntosRecompensa > 0 ? 'challenges.completedText' : 'challenges.completedTextPersonal') + (result.xpGanado > 0 ? '' : 'NoXp'),
         textParams: { title: participation.titulo, points: result.puntosRecompensa, xp: result.xpGanado },
         accept: 'challenges.great',
       });
     } else {
       this.snackBar.open(
-        this.i18n.t('challenges.progressSaved', { xp: result.xpGanado, day: result.diaActual, total: result.duracionDias }),
+        // The +20 XP of the daily progress are earned once a day, even with several challenges
+        this.i18n.t(result.xpGanado > 0 ? 'challenges.progressSaved' : 'challenges.progressSavedNoXp', {
+          xp: result.xpGanado,
+          day: result.diaActual,
+          total: result.duracionDias,
+        }),
         'OK',
         { duration: 4000, panelClass: 'snack-success' },
       );
