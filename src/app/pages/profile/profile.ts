@@ -1,10 +1,14 @@
 import { localToday } from '../../core/dates';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, linkedSignal, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
+import { FormsModule } from '@angular/forms';
+import { Theme, THEMES, themeIcon, ThemeService } from '../../core/theme.service';
+import { Lang } from '../../core/i18n/i18n.service';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -36,6 +40,8 @@ import { ExpenseService, IncomeService, SavingGoalService } from '../../core/res
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    MatRadioModule,
+    FormsModule,
     MatProgressBarModule,
     RouterLink,
     CurrencyPipe,
@@ -55,6 +61,20 @@ export class Profile implements OnInit {
   private goalService = inject(SavingGoalService);
   private challenges = inject(ChallengesService);
   private lookups = inject(LookupStore);
+  private themes = inject(ThemeService);
+
+  // ---------- US37: preferences (applied and saved when the user confirms) ----------
+  readonly themeOptions = THEMES;
+  readonly themeIcon = themeIcon;
+  // linkedSignal: if the theme or language changes from the toolbar, the card shows the new value
+  readonly pendingTheme = linkedSignal<Theme>(() => this.themes.theme());
+  readonly pendingLang = linkedSignal<Lang>(() => this.i18n.lang());
+
+  savePreferences(): void {
+    this.themes.setTheme(this.pendingTheme());
+    this.i18n.setLang(this.pendingLang());
+    this.snackBar.open(this.i18n.t('preferences.saved'), 'OK', { duration: 3000, panelClass: 'snack-success' });
+  }
 
   // ---------- US36: statistics and spending habits (only MY records, also for an ADMIN) ----------
   private readonly allExpenses = signal<Expense[]>([]);

@@ -466,4 +466,12 @@ export const ES_419: Record<string, string> = {
   'dashboard.pdfLabel': 'Descargar el reporte en PDF de {from} a {to}',
   'dashboard.pdfDone': 'Reporte descargado',
   'dashboard.pdfError': 'No se pudo generar el reporte. Inténtalo de nuevo.',
+  'theme.title': 'Tema',
+  'theme.light': 'Claro',
+  'theme.dark': 'Oscuro',
+  'theme.auto': 'Según el sistema',
+  'theme.autoHint': '"Según el sistema" usa el tema claro u oscuro de tu dispositivo.',
+  'preferences.title': 'Preferencias',
+  'preferences.save': 'Guardar preferencias',
+  'preferences.saved': 'Preferencias actualizadas',
 };

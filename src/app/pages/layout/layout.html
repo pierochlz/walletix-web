@@ -48,6 +48,7 @@
         <mat-icon [matBadge]="unread > 9 ? '9+' : unread" [matBadgeHidden]="unread === 0" matBadgeColor="warn"
                   aria-hidden="true">notifications</mat-icon>
       </a>
+      <app-theme-menu />
       <app-language-menu />
       <button mat-button [matMenuTriggerFor]="userMenu" class="user-button"
               [attr.aria-label]="auth.user()?.nombreUsuario ?? ''">

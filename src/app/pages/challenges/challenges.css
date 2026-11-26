@@ -64,7 +64,7 @@ h3 {
 }
 
 .fire {
-  color: #ea580c;
+  color: var(--wx-fire);
 }
 
 .block {
@@ -111,8 +111,8 @@ h3 {
 }
 
 .badge.official {
-  background: #fef3c7;
-  color: #78350f;
+  background: var(--wx-warning-bg);
+  color: var(--wx-on-warning-bg);
 }
 
 .desc,
@@ -147,7 +147,7 @@ h3 {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #15803d;
+  color: var(--wx-success);
   font: var(--mat-sys-label-large);
 }
 
@@ -155,8 +155,8 @@ h3 {
   margin-top: 12px;
   padding: 10px 12px;
   border-radius: 8px;
-  background: #fef3c7;
-  color: #78350f;
+  background: var(--wx-warning-bg);
+  color: var(--wx-on-warning-bg);
 }
 
 .missing p {
@@ -205,7 +205,7 @@ h3 {
   font-size: 40px;
   width: 40px;
   height: 40px;
-  color: #ca8a04;
+  color: var(--wx-gold);
 }
 
 .medal.locked {
@@ -266,7 +266,7 @@ h3 {
 }
 
 .state-COMPLETADO {
-  color: #ca8a04;
+  color: var(--wx-gold);
 }
 
 .state-VENCIDO,

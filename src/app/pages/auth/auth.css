@@ -82,3 +82,10 @@ mat-card-content {
     grid-template-columns: 1fr;
   }
 }
+
+/* US37: theme and language together on the right */
+.auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

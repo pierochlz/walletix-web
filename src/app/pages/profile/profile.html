@@ -214,3 +214,35 @@
     </form>
   </mat-card>
 </div>
+
+<!-- US37: preferences of the application -->
+<mat-card appearance="outlined" class="preferences">
+  <mat-card-header>
+    <mat-card-title><h2>{{ 'preferences.title' | t }}</h2></mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="pref-grid">
+      <fieldset>
+        <legend>{{ 'theme.title' | t }}</legend>
+        <mat-radio-group [ngModel]="pendingTheme()" (ngModelChange)="pendingTheme.set($event)" name="theme">
+          @for (option of themeOptions; track option) {
+            <mat-radio-button [value]="option">
+              <mat-icon aria-hidden="true" class="pref-icon">{{ themeIcon(option) }}</mat-icon>{{ 'theme.' + option | t }}
+            </mat-radio-button>
+          }
+        </mat-radio-group>
+        <p class="muted small">{{ 'theme.autoHint' | t }}</p>
+      </fieldset>
+      <fieldset>
+        <legend>{{ 'app.language' | t }}</legend>
+        <mat-radio-group [ngModel]="pendingLang()" (ngModelChange)="pendingLang.set($event)" name="lang">
+          <mat-radio-button value="es" lang="es-419">Español (Latinoamérica)</mat-radio-button>
+          <mat-radio-button value="en" lang="en-US">English (US)</mat-radio-button>
+        </mat-radio-group>
+      </fieldset>
+    </div>
+  </mat-card-content>
+  <mat-card-actions align="end">
+    <button mat-flat-button type="button" (click)="savePreferences()">{{ 'preferences.save' | t }}</button>
+  </mat-card-actions>
+</mat-card>

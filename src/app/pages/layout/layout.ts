@@ -16,6 +16,7 @@ import { NotificationStore } from '../../core/notification.store';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { LookupStore } from '../../core/lookup.store';
 import { LanguageMenu } from '../../shared/language-menu';
+import { ThemeMenu } from '../../shared/theme-menu';
 
 // Frame of the private pages: toolbar, side menu (drawer on phones) and footer
 @Component({
@@ -34,6 +35,7 @@ import { LanguageMenu } from '../../shared/language-menu';
     MatTooltipModule,
     TranslatePipe,
     LanguageMenu,
+    ThemeMenu,
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.css',

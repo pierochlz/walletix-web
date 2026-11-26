@@ -16,6 +16,13 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   </head>
   <body>
+  <script>
+    // US37: saved theme before the app loads (see ThemeService)
+    try {
+      var theme = localStorage.getItem('walletix_theme');
+      if (theme === 'dark' || theme === 'auto') document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) {}
+  </script>
     <app-root></app-root>
   </body>
 </html>

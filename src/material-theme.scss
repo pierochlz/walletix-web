@@ -7,6 +7,17 @@
 
 html {
   height: 100%;
+  // US37: light by default; dark or the system setting when the user chooses it
+  color-scheme: light;
+
+  &[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  &[data-theme='auto'] {
+    color-scheme: light dark;
+  }
+
   @include mat.theme(
     (
       color: (
@@ -20,11 +31,6 @@ html {
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
   // Set a default background, font and text colors for the application using
   // Angular Material's system-level CSS variables. Learn more about these
   // variables at https://material.angular.dev/guide/system-variables

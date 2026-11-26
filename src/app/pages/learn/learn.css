@@ -94,7 +94,7 @@ h1 {
 }
 
 .star .on {
-  color: #f59e0b;
+  color: var(--wx-star);
 }
 
 .head {
@@ -109,7 +109,7 @@ h1 {
 }
 
 .type.tip {
-  color: #d97706;
+  color: var(--wx-amber);
 }
 
 .titles {
@@ -151,11 +151,11 @@ h2 {
 }
 
 .lock-hint {
-  color: #b45309;
+  color: var(--wx-warning);
 }
 
 .passed {
-  color: #15803d;
+  color: var(--wx-success);
 }
 
 .lock-hint mat-icon,

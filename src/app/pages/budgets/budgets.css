@@ -1,8 +1,9 @@
-/* Colors of the three levels. Text colors keep a 4.5:1 contrast on white (WCAG AA). */
+/* Colors of the three levels. Text colors keep a 4.5:1 contrast on white (WCAG AA)
+   and lighter versions on the dark theme (US37). */
 :host {
-  --level-ok: #15803d;
-  --level-warning: #b45309;
-  --level-over: #b91c1c;
+  --level-ok: light-dark(#15803d, #4ade80);
+  --level-warning: light-dark(#b45309, #fbbf24);
+  --level-over: light-dark(#b91c1c, #f87171);
 }
 
 .page-header {

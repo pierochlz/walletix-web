@@ -38,11 +38,11 @@ h2 {
 }
 
 .type.tip {
-  color: #d97706;
+  color: var(--wx-amber);
 }
 
 .on {
-  color: #f59e0b;
+  color: var(--wx-star);
 }
 
 .meta {
@@ -113,14 +113,14 @@ mat-radio-group {
   margin-top: 16px;
   padding: 14px 16px;
   border-radius: 12px;
-  background: #fef3c7;
-  color: #78350f;
+  background: var(--wx-warning-bg);
+  color: var(--wx-on-warning-bg);
   outline: none;
 }
 
 .result.ok {
-  background: #dcfce7;
-  color: #14532d;
+  background: var(--wx-success-bg);
+  color: var(--wx-on-success-bg);
 }
 
 .result p {
@@ -144,7 +144,7 @@ mat-radio-group {
 }
 
 .right .q mat-icon {
-  color: #15803d;
+  color: var(--wx-success);
 }
 
 .wrong .q mat-icon {
@@ -171,7 +171,7 @@ mat-radio-group {
 
 .locked-card > mat-icon {
   flex: none;
-  color: #b45309;
+  color: var(--wx-warning);
 }
 
 .locked-card h1 {

@@ -99,7 +99,7 @@ h2 {
 
 .tip > mat-icon {
   flex: none;
-  color: #d97706;
+  color: var(--wx-amber);
 }
 
 .tip p {
@@ -124,7 +124,7 @@ h2 {
 }
 
 .stat.ant mat-icon {
-  color: #b45309;
+  color: var(--wx-warning);
 }
 
 .chart-card {
@@ -216,7 +216,7 @@ h2 {
 }
 
 .good {
-  color: #15803d;
+  color: var(--wx-success);
 }
 
 .sr-only {

@@ -128,7 +128,7 @@ section {
 }
 
 .stat mat-icon.income {
-  color: #16a34a;
+  color: var(--wx-success);
 }
 
 .stat mat-icon.expense,
@@ -137,11 +137,11 @@ section {
 }
 
 mat-icon.ant {
-  color: #b45309;
+  color: var(--wx-warning);
 }
 
 mat-icon.fire {
-  color: #ea580c;
+  color: var(--wx-fire);
 }
 
 .label {
@@ -196,4 +196,40 @@ mat-icon.fire {
   .stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* US37: preferences */
+.preferences {
+  margin-top: 16px;
+}
+
+.pref-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 16px 32px;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+legend {
+  margin-bottom: 4px;
+  font: var(--mat-sys-title-small);
+}
+
+mat-radio-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.pref-icon {
+  vertical-align: middle;
+  margin-right: 6px;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
 }

@@ -75,7 +75,7 @@ h1 {
 
 /* Budget alerts in amber (same color as the budgets view) */
 .type-alerta .type-icon {
-  color: #b45309;
+  color: var(--wx-warning);
 }
 
 .body {

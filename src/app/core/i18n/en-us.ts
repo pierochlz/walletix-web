@@ -466,4 +466,12 @@ export const EN_US: Record<string, string> = {
   'dashboard.pdfLabel': 'Download the PDF report from {from} to {to}',
   'dashboard.pdfDone': 'Report downloaded',
   'dashboard.pdfError': 'The report could not be created. Try again.',
+  'theme.title': 'Theme',
+  'theme.light': 'Light',
+  'theme.dark': 'Dark',
+  'theme.auto': 'System default',
+  'theme.autoHint': '"System default" uses the light or dark theme of your device.',
+  'preferences.title': 'Preferences',
+  'preferences.save': 'Save preferences',
+  'preferences.saved': 'Preferences updated',
 };

@@ -1,4 +1,20 @@
 /* Global styles */
+
+/* US37: Walletix colors that are not part of Angular Material, in light and dark versions.
+   light-dark() picks one according to the color-scheme of <html> (see material-theme.scss).
+   Text colors keep 4.5:1 on the page background; icon-only colors (amber, star, fire, gold) at least 3:1 (WCAG AA). */
+:root {
+  --wx-success: light-dark(#15803d, #4ade80);
+  --wx-warning: light-dark(#b45309, #fbbf24);
+  --wx-amber: light-dark(#d97706, #fbbf24);
+  --wx-star: light-dark(#d97706, #fbbf24);
+  --wx-fire: light-dark(#ea580c, #fb923c);
+  --wx-gold: light-dark(#a16207, #facc15);
+  --wx-success-bg: light-dark(#dcfce7, #14532d);
+  --wx-on-success-bg: light-dark(#14532d, #dcfce7);
+  --wx-warning-bg: light-dark(#fef3c7, #78350f);
+  --wx-on-warning-bg: light-dark(#78350f, #fef3c7);
+}
 * {
   box-sizing: border-box;
 }
@@ -47,16 +63,16 @@ button.danger {
 
 /* Success snackbar (challenges: "Progress registered! +20 XP") */
 .snack-success {
-  --mat-snack-bar-container-color: #dcfce7;
-  --mat-snack-bar-supporting-text-color: #14532d;
-  --mat-snack-bar-button-color: #14532d;
+  --mat-snack-bar-container-color: var(--wx-success-bg);
+  --mat-snack-bar-supporting-text-color: var(--wx-on-success-bg);
+  --mat-snack-bar-button-color: var(--wx-on-success-bg);
 }
 
 /* Warning snackbar (US15 budget alert): amber so it is not confused with a success message */
 .snack-warning {
-  --mat-snack-bar-container-color: #fef3c7;
-  --mat-snack-bar-supporting-text-color: #78350f;
-  --mat-snack-bar-button-color: #78350f;
+  --mat-snack-bar-container-color: var(--wx-warning-bg);
+  --mat-snack-bar-supporting-text-color: var(--wx-on-warning-bg);
+  --mat-snack-bar-button-color: var(--wx-on-warning-bg);
 }
 
 /* Phones: the tables of .responsive-table become cards with "label: value" lines.

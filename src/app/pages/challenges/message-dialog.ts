@@ -34,8 +34,8 @@ export interface MessageDialogData {
   styles: `
     .head { display: flex; align-items: center; gap: 8px; padding: 20px 24px 0; }
     .head h2 { padding: 0; margin: 0; }
-    .head.warning mat-icon { color: #b45309; }
-    .head.success mat-icon { color: #15803d; }
+    .head.warning mat-icon { color: var(--wx-warning); }
+    .head.success mat-icon { color: var(--wx-success); }
     .head.danger mat-icon { color: var(--mat-sys-error); }
   `,
 })
