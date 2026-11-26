@@ -452,6 +452,8 @@ export const EN_US: Record<string, string> = {
   'profile.averageTicketHint': 'In {count} purchases',
   'profile.ant': 'Small expenses',
   'profile.antHint': '{count} purchases under S/ 10 · {percent}% of your expenses',
+  'profile.antHintOne': '1 purchase under S/ 10 · {percent}% of your expenses',
+  'profile.averageTicketHintOne': 'In 1 purchase',
   'profile.antLearn': 'Learn to reduce them',
   'profile.streak': 'Streak registering expenses',
   'profile.streakDays': '{days} days in a row',

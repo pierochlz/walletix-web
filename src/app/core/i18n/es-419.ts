@@ -452,6 +452,8 @@ export const ES_419: Record<string, string> = {
   'profile.averageTicketHint': 'En {count} compras',
   'profile.ant': 'Gastos hormiga',
   'profile.antHint': '{count} compras menores a S/ 10 · {percent}% de tus gastos',
+  'profile.antHintOne': '1 compra menor a S/ 10 · {percent}% de tus gastos',
+  'profile.averageTicketHintOne': 'En 1 compra',
   'profile.antLearn': 'Aprende a reducirlos',
   'profile.streak': 'Racha registrando gastos',
   'profile.streakDays': '{days} días seguidos',

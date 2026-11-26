@@ -114,7 +114,7 @@ section {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr)); /* 2 per row on a phone */
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 6 cards: 2 even rows of 3 (2 per row on a phone) */
   gap: 12px;
 }
 
@@ -190,4 +190,10 @@ mat-icon.fire {
 
 .empty {
   padding: 16px;
+}
+
+@media (max-width: 600px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

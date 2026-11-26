@@ -111,7 +111,7 @@
           <div>
             <p class="label">{{ 'profile.averageTicket' | t }}</p>
             <p class="habit">{{ hb.averageTicket | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</p>
-            <p class="muted small">{{ 'profile.averageTicketHint' | t: { count: hb.count } }}</p>
+            <p class="muted small">{{ (hb.count === 1 ? 'profile.averageTicketHintOne' : 'profile.averageTicketHint') | t: { count: hb.count } }}</p>
           </div>
         </li>
         <li>
@@ -120,7 +120,7 @@
             <p class="label">{{ 'profile.ant' | t }}</p>
             <p class="habit">{{ hb.ant.total | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</p>
             <p class="muted small">
-              {{ 'profile.antHint' | t: { count: hb.ant.count, percent: (hb.ant.percent | number: '1.0-1' : loc) ?? '' } }}
+              {{ (hb.ant.count === 1 ? 'profile.antHintOne' : 'profile.antHint') | t: { count: hb.ant.count, percent: (hb.ant.percent | number: '1.0-1' : loc) ?? '' } }}
               @if (hb.ant.count > 0) { · <a routerLink="/learn">{{ 'profile.antLearn' | t }}</a> }
             </p>
           </div>
