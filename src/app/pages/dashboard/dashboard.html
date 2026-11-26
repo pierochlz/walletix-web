@@ -60,7 +60,7 @@
   </mat-card-header>
   <mat-card-content>
     @if (hasMovements()) {
-      <app-line-chart [points]="evolution()" [label]="'dashboard.evolution' | t" [format]="currency" color="#2563eb" />
+      <app-line-chart [points]="evolution()" [label]="'dashboard.evolution' | t" [format]="currency" [detail]="money" color="#2563eb" />
     } @else {
       <p class="muted">{{ 'dashboard.noMovements' | t }} <a routerLink="/incomes">{{ 'nav.incomes' | t }}</a> · <a routerLink="/expenses">{{ 'nav.expenses' | t }}</a></p>
     }
@@ -183,7 +183,7 @@
           <li><span class="dot income"></span>{{ 'dashboard.incomes' | t }}</li>
           <li><span class="dot expense"></span>{{ 'dashboard.expenses' | t }}</li>
         </ul>
-        <app-bar-chart [labels]="flowLabels()" [series]="flowSeries()" [label]="'dashboard.compareTitle' | t" [format]="currency" />
+        <app-bar-chart [labels]="flowLabels()" [series]="flowSeries()" [label]="'dashboard.compareTitle' | t" [format]="currency" [detail]="money" />
       </mat-card-content>
     </mat-card>
 

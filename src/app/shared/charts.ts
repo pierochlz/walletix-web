@@ -50,7 +50,7 @@ function niceStep(raw: number): number {
       <polyline [attr.points]="line()" fill="none" [attr.stroke]="color()" stroke-width="3" stroke-linejoin="round" />
       @for (p of points(); track $index) {
         <circle [attr.cx]="x($index)" [attr.cy]="y(p.value)" r="5" [attr.fill]="color()">
-          <title>{{ p.label }}: {{ format()(p.value) }}</title>
+          <title>{{ p.label }}: {{ exact()(p.value) }}</title>
         </circle>
         <text class="tick" [attr.x]="x($index)" [attr.y]="height - 8" text-anchor="middle">{{ p.label }}</text>
       }
@@ -58,7 +58,7 @@ function niceStep(raw: number): number {
     <table class="sr-only">
       <caption>{{ label() }}</caption>
       @for (p of points(); track $index) {
-        <tr><th scope="row">{{ p.label }}</th><td>{{ format()(p.value) }}</td></tr>
+        <tr><th scope="row">{{ p.label }}</th><td>{{ exact()(p.value) }}</td></tr>
       }
     </table>
   `,
@@ -68,7 +68,9 @@ export class LineChart {
   readonly points = input.required<{ label: string; value: number }[]>();
   readonly label = input.required<string>();
   readonly color = input('#2563eb');
-  readonly format = input<(n: number) => string>((n) => String(n));
+  readonly format = input<(n: number) => string>((n) => String(n)); // axis (rounded)
+  readonly detail = input<((n: number) => string) | null>(null); // tooltip and hidden table (exact)
+  readonly exact = computed(() => this.detail() ?? this.format());
 
   readonly width = realWidth();
   readonly height = H;
@@ -106,7 +108,7 @@ export interface BarSeries {
         @for (s of series(); track s.name; let j = $index) {
           <rect [attr.x]="barX(i, j)" [attr.y]="y(s.values[i])" [attr.width]="barWidth()" [attr.height]="barHeight(s.values[i])"
                 [attr.fill]="s.color" rx="3">
-            <title>{{ l }} · {{ s.name }}: {{ format()(s.values[i]) }}</title>
+            <title>{{ l }} · {{ s.name }}: {{ exact()(s.values[i]) }}</title>
           </rect>
         }
         <text class="tick" [attr.x]="groupCenter(i)" [attr.y]="height - 8" text-anchor="middle">{{ l }}</text>
@@ -116,7 +118,7 @@ export interface BarSeries {
       <caption>{{ label() }}</caption>
       <tr><th scope="col"></th>@for (s of series(); track s.name) { <th scope="col">{{ s.name }}</th> }</tr>
       @for (l of labels(); track $index; let i = $index) {
-        <tr><th scope="row">{{ l }}</th>@for (s of series(); track s.name) { <td>{{ format()(s.values[i]) }}</td> }</tr>
+        <tr><th scope="row">{{ l }}</th>@for (s of series(); track s.name) { <td>{{ exact()(s.values[i]) }}</td> }</tr>
       }
     </table>
   `,
@@ -126,7 +128,9 @@ export class BarChart {
   readonly labels = input.required<string[]>();
   readonly series = input.required<BarSeries[]>();
   readonly label = input.required<string>();
-  readonly format = input<(n: number) => string>((n) => String(n));
+  readonly format = input<(n: number) => string>((n) => String(n)); // axis (rounded)
+  readonly detail = input<((n: number) => string) | null>(null); // tooltip and hidden table (exact)
+  readonly exact = computed(() => this.detail() ?? this.format());
 
   readonly width = realWidth();
   readonly height = H;
