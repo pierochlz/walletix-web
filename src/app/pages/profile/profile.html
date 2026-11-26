@@ -1,5 +1,146 @@
 <h1>{{ 'profile.title' | t }}</h1>
 
+@let user = auth.user();
+@let st = stats();
+@let hb = habits();
+@let loc = i18n.locale();
+
+<!-- US36: my profile -->
+<mat-card appearance="outlined" class="identity">
+  <div class="avatar" aria-hidden="true">{{ initials() }}</div>
+  <div class="who">
+    <h2 class="name">{{ user?.nombreUsuario }}</h2>
+    <p class="muted">{{ user?.correoUsuario }}</p>
+    <p class="muted">
+      @if (user?.segmentoUsuario) { {{ 'segment.' + user!.segmentoUsuario | t }} }
+      @if (age() !== null) { · {{ 'profile.age' | t: { age: age()! } }} }
+    </p>
+  </div>
+  @if (summary(); as s) {
+    <div class="level">
+      <p class="label">{{ 'challenges.level' | t }}</p>
+      <p class="level-name">{{ s.nivel }} · {{ 'level.' + s.nombreNivel | t }}</p>
+      <mat-progress-bar mode="determinate" [value]="levelPercent()"
+                        [attr.aria-label]="'challenges.xpLabel' | t: { xp: s.xp, next: s.xpSiguienteNivel ?? s.xp }" />
+      <p class="muted small">
+        {{ s.xp }} XP · {{ 'profile.medals' | t: { won: medalsUnlocked(), total: medals().length } }}
+        · <a routerLink="/challenges">{{ 'dashboard.seeChallenges' | t }}</a>
+      </p>
+    </div>
+  }
+</mat-card>
+
+@if (loaded() < 3) {
+  <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" class="loading" />
+} @else {
+  <!-- US36: my financial statistics -->
+  <section aria-labelledby="stats-title">
+    <h2 id="stats-title" class="section-title">{{ 'profile.statsTitle' | t }}</h2>
+    <div class="stats">
+      <mat-card appearance="outlined" class="stat">
+        <mat-icon aria-hidden="true" class="income">trending_up</mat-icon>
+        <p class="label">{{ 'profile.totalIncome' | t }}</p>
+        <p class="value">{{ st.totalIncome | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</p>
+      </mat-card>
+      <mat-card appearance="outlined" class="stat">
+        <mat-icon aria-hidden="true" class="expense">trending_down</mat-icon>
+        <p class="label">{{ 'profile.totalExpense' | t }}</p>
+        <p class="value">{{ st.totalExpense | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</p>
+      </mat-card>
+      <mat-card appearance="outlined" class="stat">
+        <mat-icon aria-hidden="true">savings</mat-icon>
+        <p class="label">{{ 'profile.savingsRate' | t }}</p>
+        <p class="value" [class.negative]="(st.savingsRate ?? 0) < 0">
+          {{ st.savingsRate === null ? '—' : (st.savingsRate | number: '1.0-1' : loc) + '%' }}
+        </p>
+        <p class="muted small">{{ (st.savingsRate === null ? 'profile.savingsRateNone' : 'profile.savingsRateHint') | t }}</p>
+      </mat-card>
+      <mat-card appearance="outlined" class="stat">
+        <mat-icon aria-hidden="true">receipt_long</mat-icon>
+        <p class="label">{{ 'profile.movements' | t }}</p>
+        <p class="value">{{ st.movements }}</p>
+      </mat-card>
+      <mat-card appearance="outlined" class="stat">
+        <mat-icon aria-hidden="true">flag</mat-icon>
+        <p class="label">{{ 'profile.goals' | t }}</p>
+        <p class="value">{{ 'profile.ofTotal' | t: { done: st.goalsDone, total: st.goalsTotal } }}</p>
+      </mat-card>
+      <mat-card appearance="outlined" class="stat">
+        <mat-icon aria-hidden="true">emoji_events</mat-icon>
+        <p class="label">{{ 'profile.challenges' | t }}</p>
+        <p class="value">{{ summary() ? ('profile.ofTotal' | t: { done: summary()!.retosSuperados, total: summary()!.retosTotales }) : '…' }}</p>
+      </mat-card>
+    </div>
+  </section>
+
+  <!-- US36: my spending habits (last 90 days) -->
+  <section aria-labelledby="habits-title">
+    <h2 id="habits-title" class="section-title">{{ 'profile.habitsTitle' | t }}</h2>
+    @if (hb.count === 0) {
+      <mat-card appearance="outlined" class="empty">
+        <p class="muted">{{ 'profile.noHabits' | t }} <a routerLink="/expenses">{{ 'nav.expenses' | t }}</a></p>
+      </mat-card>
+    } @else {
+      <ul class="habits">
+        <li>
+          <mat-icon aria-hidden="true">category</mat-icon>
+          <div>
+            <p class="label">{{ 'profile.topCategory' | t }}</p>
+            <p class="habit">{{ categoryName(hb.topCategory!.idCategoria) }}</p>
+            <p class="muted small">{{ 'profile.topCategoryHint' | t: { amount: (hb.topCategory!.amount | currency: 'PEN' : 'S/ ' : '1.2-2' : loc) ?? '', percent: (hb.topCategory!.percent | number: '1.0-1' : loc) ?? '' } }}</p>
+          </div>
+        </li>
+        <li>
+          <mat-icon aria-hidden="true">calendar_today</mat-icon>
+          <div>
+            <p class="label">{{ 'profile.topWeekday' | t }}</p>
+            <p class="habit">{{ weekdayName(hb.topWeekday!.day) }}</p>
+            <p class="muted small">{{ 'profile.topWeekdayHint' | t: { amount: (hb.topWeekday!.amount | currency: 'PEN' : 'S/ ' : '1.2-2' : loc) ?? '' } }}</p>
+          </div>
+        </li>
+        <li>
+          <mat-icon aria-hidden="true">payments</mat-icon>
+          <div>
+            <p class="label">{{ 'profile.topMethod' | t }}</p>
+            <p class="habit">{{ 'method.' + hb.topMethod!.method | t }}</p>
+            <p class="muted small">{{ 'profile.topMethodHint' | t: { percent: (hb.topMethod!.percent | number: '1.0-1' : loc) ?? '' } }}</p>
+          </div>
+        </li>
+        <li>
+          <mat-icon aria-hidden="true">shopping_bag</mat-icon>
+          <div>
+            <p class="label">{{ 'profile.averageTicket' | t }}</p>
+            <p class="habit">{{ hb.averageTicket | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</p>
+            <p class="muted small">{{ 'profile.averageTicketHint' | t: { count: hb.count } }}</p>
+          </div>
+        </li>
+        <li>
+          <mat-icon aria-hidden="true" class="ant">bug_report</mat-icon>
+          <div>
+            <p class="label">{{ 'profile.ant' | t }}</p>
+            <p class="habit">{{ hb.ant.total | currency: 'PEN' : 'S/ ' : '1.2-2' : loc }}</p>
+            <p class="muted small">
+              {{ 'profile.antHint' | t: { count: hb.ant.count, percent: (hb.ant.percent | number: '1.0-1' : loc) ?? '' } }}
+              @if (hb.ant.count > 0) { · <a routerLink="/learn">{{ 'profile.antLearn' | t }}</a> }
+            </p>
+          </div>
+        </li>
+        <li>
+          <mat-icon aria-hidden="true" class="fire">local_fire_department</mat-icon>
+          <div>
+            <p class="label">{{ 'profile.streak' | t }}</p>
+            <p class="habit">{{ (hb.streak === 1 ? 'profile.streakOne' : 'profile.streakDays') | t: { days: hb.streak } }}</p>
+            <p class="muted small">{{ 'profile.streakHint' | t }}</p>
+          </div>
+        </li>
+      </ul>
+      <p class="muted small">{{ 'profile.habitsWindow' | t }}</p>
+    }
+  </section>
+}
+
+<h2 class="section-title">{{ 'profile.editTitle' | t }}</h2>
+
 <div class="columns">
   <mat-card appearance="outlined">
     <form [formGroup]="form" (ngSubmit)="saveProfile()" novalidate>

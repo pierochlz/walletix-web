@@ -52,3 +52,142 @@ mat-form-field {
     grid-template-columns: 1fr;
   }
 }
+
+/* US36: profile, statistics and habits */
+.identity {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  font: var(--mat-sys-headline-small);
+}
+
+.who {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.who p,
+.level p {
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.name {
+  font: var(--mat-sys-title-large);
+}
+
+.level {
+  flex: 1 1 240px;
+}
+
+.level-name {
+  font: var(--mat-sys-title-medium);
+  margin-bottom: 6px !important;
+}
+
+.section-title {
+  margin: 0 0 12px;
+}
+
+.loading {
+  margin-bottom: 24px;
+}
+
+section {
+  margin-bottom: 24px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr)); /* 2 per row on a phone */
+  gap: 12px;
+}
+
+.stat {
+  padding: 14px 16px;
+}
+
+.stat mat-icon,
+.habits mat-icon {
+  color: var(--mat-sys-primary);
+}
+
+.stat mat-icon.income {
+  color: #16a34a;
+}
+
+.stat mat-icon.expense,
+.negative {
+  color: var(--mat-sys-error);
+}
+
+mat-icon.ant {
+  color: #b45309;
+}
+
+mat-icon.fire {
+  color: #ea580c;
+}
+
+.label {
+  margin: 6px 0 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.value {
+  margin: 4px 0 0;
+  font: var(--mat-sys-title-large);
+}
+
+.muted {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.small {
+  font: var(--mat-sys-body-small);
+}
+
+.habits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 12px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.habits li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+}
+
+.habits p {
+  margin: 0;
+}
+
+.habit {
+  font: var(--mat-sys-title-medium);
+}
+
+.empty {
+  padding: 16px;
+}
