@@ -12,6 +12,8 @@ function realWidth(): () => number {
   const width = signal(600);
   const destroyRef = inject(DestroyRef);
   afterNextRender(() => {
+    // Old browsers (and test environments) without ResizeObserver keep the default width
+    if (typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver((entries) => width.set(Math.max(260, Math.round(entries[0].contentRect.width))));
     observer.observe(host);
     destroyRef.onDestroy(() => observer.disconnect());
@@ -20,10 +22,10 @@ function realWidth(): () => number {
 }
 
 // "Nice" axis: from the minimum (or 0) to the maximum, in about 4 steps
-function axis(values: number[]): { min: number; max: number; ticks: number[] } {
+export function axis(values: number[]): { min: number; max: number; ticks: number[] } {
   const max = Math.max(0, ...values);
   const min = Math.min(0, ...values);
-  const span = max - min || 1;
+  const span = max - min || 100; // all values in 0 (e.g. a new user): an axis from 0 to 100, not 0 to 1
   const step = niceStep(span / 4);
   const lo = Math.floor(min / step) * step;
   const hi = Math.ceil(max / step) * step || step;
