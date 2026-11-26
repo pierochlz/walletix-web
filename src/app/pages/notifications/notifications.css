@@ -149,3 +149,9 @@ h1 {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* US25 */
+.choose {
+  margin: -8px 0 16px;
+  font: var(--mat-sys-body-small);
+}

@@ -3,7 +3,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
-import { AppNotification } from './models';
+import { AppNotification, NotificationPreferences } from './models';
 import { countByFilter } from './notifications';
 import { onlyOwn } from './ownership';
 
@@ -51,6 +51,15 @@ export class NotificationStore {
     return this.http
       .put<{ marcadas: number }>(`${this.url}/leer-todas`, null)
       .pipe(tap(() => this.all.update((list) => list.map((n) => ({ ...n, estadoNotificacion: true })))));
+  }
+
+  // US25: which automatic notifications the user wants to receive
+  preferences(): Observable<NotificationPreferences> {
+    return this.http.get<NotificationPreferences>(`${this.url}/preferencias`);
+  }
+
+  savePreferences(preferences: NotificationPreferences): Observable<NotificationPreferences> {
+    return this.http.put<NotificationPreferences>(`${this.url}/preferencias`, preferences);
   }
 
   remove(notification: AppNotification): Observable<string> {

@@ -474,4 +474,10 @@ export const EN_US: Record<string, string> = {
   'preferences.title': 'Preferences',
   'preferences.save': 'Save preferences',
   'preferences.saved': 'Preferences updated',
+  'preferences.notifications': 'Notifications I want to receive',
+  'preferences.notify.alerta': 'Budget alerts',
+  'preferences.notify.logro': 'Unlocked achievements',
+  'preferences.notify.reto': 'Challenges (completed or lost days)',
+  'preferences.notifyHint': 'It only affects the bell. The warning when you save an expense over your budget is still shown.',
+  'notifications.choose': 'Choose which notifications to receive',
 };

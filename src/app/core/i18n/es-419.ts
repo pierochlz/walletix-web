@@ -474,4 +474,10 @@ export const ES_419: Record<string, string> = {
   'preferences.title': 'Preferencias',
   'preferences.save': 'Guardar preferencias',
   'preferences.saved': 'Preferencias actualizadas',
+  'preferences.notifications': 'Notificaciones que quiero recibir',
+  'preferences.notify.alerta': 'Alertas de presupuesto',
+  'preferences.notify.logro': 'Logros desbloqueados',
+  'preferences.notify.reto': 'Retos (superados o días perdidos)',
+  'preferences.notifyHint': 'Solo afecta a la campana. El aviso al guardar un gasto que supera tu presupuesto se sigue mostrando.',
+  'notifications.choose': 'Elige qué notificaciones recibir',
 };

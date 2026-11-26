@@ -12,6 +12,8 @@
       {{ 'notifications.markAll' | t }}
     </button>
   </header>
+  <!-- US25 -->
+  <p class="choose"><a routerLink="/profile" fragment="preferencias">{{ 'notifications.choose' | t }}</a></p>
 
   <!-- US23: three tabs with the number of notifications of each one -->
   <mat-button-toggle-group class="tabs" [value]="filter()" (change)="filter.set($event.value)"

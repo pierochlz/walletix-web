@@ -238,6 +238,13 @@ export interface FavoriteResult {
   totalFavoritos: number;
 }
 
+// US25: automatic notifications the user wants to receive
+export interface NotificationPreferences {
+  alerta: boolean;
+  logro: boolean;
+  reto: boolean;
+}
+
 // Body of POST /login and its response
 export interface LoginRequest {
   correo: string;

@@ -1,4 +1,5 @@
 import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -19,7 +20,7 @@ import { ConfirmDialog } from '../../shared/confirm-dialog';
 // US22: panel with all the notifications · US23: tabs All / Unread / Read · US24: mark as read / unread
 @Component({
   selector: 'app-notifications-page',
-  imports: [MatButtonModule, MatButtonToggleModule, MatIconModule, MatProgressBarModule, MatTooltipModule, DatePipe, TranslatePipe],
+  imports: [RouterLink, MatButtonModule, MatButtonToggleModule, MatIconModule, MatProgressBarModule, MatTooltipModule, DatePipe, TranslatePipe],
   templateUrl: './notifications.html',
   styleUrl: './notifications.css',
 })

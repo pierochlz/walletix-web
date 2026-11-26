@@ -6,6 +6,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { NotificationStore } from '../../core/notification.store';
+import { NotificationPreferences } from '../../core/models';
+import { forkJoin, of } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { Theme, THEMES, themeIcon, ThemeService } from '../../core/theme.service';
 import { Lang } from '../../core/i18n/i18n.service';
@@ -19,7 +23,7 @@ import { apiErrorMessage } from '../../core/api-error';
 import { AuthService } from '../../core/auth.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ChallengesService } from '../../core/challenges.service';
 import { levelProgress } from '../../core/challenges';
 import { LookupStore } from '../../core/lookup.store';
@@ -41,6 +45,7 @@ import { ExpenseService, IncomeService, SavingGoalService } from '../../core/res
     MatButtonModule,
     MatIconModule,
     MatRadioModule,
+    MatCheckboxModule,
     FormsModule,
     MatProgressBarModule,
     RouterLink,
@@ -62,6 +67,17 @@ export class Profile implements OnInit {
   private challenges = inject(ChallengesService);
   private lookups = inject(LookupStore);
   private themes = inject(ThemeService);
+  private notificationStore = inject(NotificationStore);
+  private route = inject(ActivatedRoute);
+
+  // US25: null until the API answers (the checkboxes are disabled meanwhile)
+  readonly notifyPrefs = signal<NotificationPreferences | null>(null);
+  readonly notifyTypes: (keyof NotificationPreferences)[] = ['alerta', 'logro', 'reto'];
+  readonly savingPrefs = signal(false);
+
+  setNotify(type: keyof NotificationPreferences, value: boolean): void {
+    this.notifyPrefs.update((p) => (p ? { ...p, [type]: value } : p));
+  }
 
   // ---------- US37: preferences (applied and saved when the user confirms) ----------
   readonly themeOptions = THEMES;
@@ -73,7 +89,19 @@ export class Profile implements OnInit {
   savePreferences(): void {
     this.themes.setTheme(this.pendingTheme());
     this.i18n.setLang(this.pendingLang());
-    this.snackBar.open(this.i18n.t('preferences.saved'), 'OK', { duration: 3000, panelClass: 'snack-success' });
+    // US25: the notification types are saved in the API (they apply on every device)
+    const prefs = this.notifyPrefs();
+    this.savingPrefs.set(true);
+    forkJoin([prefs ? this.notificationStore.savePreferences(prefs) : of(null)]).subscribe({
+      next: () => {
+        this.savingPrefs.set(false);
+        this.snackBar.open(this.i18n.t('preferences.saved'), 'OK', { duration: 3000, panelClass: 'snack-success' });
+      },
+      error: (err) => {
+        this.savingPrefs.set(false);
+        this.snackBar.open(apiErrorMessage(err, this.i18n.t('form.error')), 'OK', { duration: 6000 });
+      },
+    });
   }
 
   // ---------- US36: statistics and spending habits (only MY records, also for an ADMIN) ----------
@@ -118,6 +146,8 @@ export class Profile implements OnInit {
     // Level and medals of the challenges center (the summary also hands out the achievements already earned)
     this.challenges.summary().subscribe({ next: (s) => this.summary.set(s), error: () => {} });
     this.challenges.medals().subscribe({ next: (m) => this.medals.set(m), error: () => {} });
+    this.notificationStore.preferences().subscribe({ next: (p) => this.notifyPrefs.set(p), error: () => this.notifyPrefs.set(null) });
+    this.scrollToPreferences = this.route.snapshot.fragment === 'preferencias';
   }
 
   readonly segments = ['estudiante', 'trabajador', 'independiente'];
@@ -137,6 +167,16 @@ export class Profile implements OnInit {
   readonly passwordForm = this.fb.nonNullable.group({
     contrasenaActual: ['', Validators.required],
     contrasenaNueva: ['', [Validators.required, Validators.minLength(6)]],
+  });
+
+  // From "Choose which notifications to receive" (/profile#preferencias) the card at the end of the page is shown.
+  // It waits for the statistics above: if it scrolled before, they would push the card out of view when they load.
+  private scrollToPreferences = false;
+  private readonly scrollWhenReady = effect(() => {
+    if (this.scrollToPreferences && this.loaded() >= 3 && this.summary()) {
+      this.scrollToPreferences = false;
+      setTimeout(() => document.getElementById('preferencias')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    }
   });
 
   constructor() {

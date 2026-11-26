@@ -233,3 +233,8 @@ mat-radio-group {
   height: 20px;
   font-size: 20px;
 }
+
+/* US25 */
+fieldset mat-checkbox {
+  display: block;
+}

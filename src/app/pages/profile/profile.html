@@ -216,7 +216,7 @@
 </div>
 
 <!-- US37: preferences of the application -->
-<mat-card appearance="outlined" class="preferences">
+<mat-card appearance="outlined" class="preferences" id="preferencias">
   <mat-card-header>
     <mat-card-title><h2>{{ 'preferences.title' | t }}</h2></mat-card-title>
   </mat-card-header>
@@ -240,9 +240,20 @@
           <mat-radio-button value="en" lang="en-US">English (US)</mat-radio-button>
         </mat-radio-group>
       </fieldset>
+      <!-- US25: which automatic notifications to receive -->
+      <fieldset>
+        <legend>{{ 'preferences.notifications' | t }}</legend>
+        @for (type of notifyTypes; track type) {
+          <mat-checkbox [checked]="notifyPrefs()?.[type] ?? true" [disabled]="!notifyPrefs()"
+                        (change)="setNotify(type, $event.checked)">
+            {{ 'preferences.notify.' + type | t }}
+          </mat-checkbox>
+        }
+        <p class="muted small">{{ 'preferences.notifyHint' | t }}</p>
+      </fieldset>
     </div>
   </mat-card-content>
   <mat-card-actions align="end">
-    <button mat-flat-button type="button" (click)="savePreferences()">{{ 'preferences.save' | t }}</button>
+    <button mat-flat-button type="button" (click)="savePreferences()" [disabled]="savingPrefs()">{{ 'preferences.save' | t }}</button>
   </mat-card-actions>
 </mat-card>
