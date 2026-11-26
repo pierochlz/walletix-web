@@ -482,4 +482,5 @@ export const EN_US: Record<string, string> = {
   'notifications.choose': 'Choose which notifications to receive',
   'form.cents': 'Use at most 2 decimals (cents)',
   'profile.emailChanged': 'Your email changed. Sign in with the new email.',
+  'form.noResults': 'No results for "{text}".',
 };

@@ -14,7 +14,7 @@ import { apiErrorMessage } from '../core/api-error';
 import { CATEGORY_COLORS, CATEGORY_ICONS, categoryIcon } from '../core/category-icons';
 import { I18nService } from '../core/i18n/i18n.service';
 import { TranslatePipe } from '../core/i18n/translate.pipe';
-import { FieldDef, ResourceConfig } from './resource-config';
+import { FieldDef, SelectOption, ResourceConfig } from './resource-config';
 
 export interface ResourceFormData {
   config: ResourceConfig;
@@ -73,6 +73,23 @@ export class ResourceFormDialog {
   constructor() {
     // When the user corrects the data, the API error of the previous attempt no longer applies
     this.form.valueChanges.subscribe(() => this.error.set(null));
+    // A dependent select (merchant) is emptied when its choice does not belong to the new parent (category)
+    for (const field of this.fields.filter((f) => f.filterBy)) {
+      this.form.get(field.filterBy!)?.valueChanges.subscribe(() => {
+        const control = this.form.get(field.key)!;
+        if (control.value !== null && !this.optionsFor(field).some((o) => o.value === control.value)) {
+          control.setValue(null);
+        }
+      });
+    }
+  }
+
+  // Options of a select. With filterBy, only the ones of the value chosen in that other field.
+  optionsFor(field: FieldDef): SelectOption[] {
+    const all = field.options?.() ?? [];
+    if (!field.filterBy) return all;
+    const parent = this.form.get(field.filterBy)?.value;
+    return parent === null || parent === undefined || parent === '' ? all : all.filter((o) => o.group === parent);
   }
 
   // One FormControl per field, with its validators

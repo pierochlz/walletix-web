@@ -7,6 +7,7 @@ export interface SelectOption {
   label: string; // an i18n key when the field has translate: true, otherwise plain text
   icon?: string; // Material icon shown next to the text (e.g. the icon of a category)
   color?: string; // color of that icon
+  group?: string | number; // e.g. the category of a merchant (see FieldDef.filterBy)
 }
 
 export interface FieldDef {
@@ -22,6 +23,8 @@ export interface FieldDef {
   minDate?: () => string;
   maxDate?: () => string;
   options?: () => SelectOption[]; // for selects
+  // Only the options whose group is the value of this other field (merchants of the chosen category)
+  filterBy?: string;
   translate?: boolean; // option labels are i18n keys
   inTable?: boolean; // default true
   inForm?: boolean; // default true

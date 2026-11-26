@@ -69,6 +69,10 @@ export class Dashboard implements OnInit {
   private readonly allExpenses = signal<Expense[]>([]);
   private readonly allIncomes = signal<Income[]>([]);
   private readonly allGoals = signal<SavingGoal[]>([]);
+  // Until the API answers, the cards say "Loading..." instead of "you have no expenses"
+  readonly expensesLoaded = signal(false);
+  readonly incomesLoaded = signal(false);
+  readonly goalsLoaded = signal(false);
 
   // The dashboard is about MY finances: only the records of the logged-in user
   private readonly myId = computed(() => this.auth.user()?.idUsuario);
@@ -202,9 +206,21 @@ export class Dashboard implements OnInit {
   ngOnInit(): void {
     if (this.lookups.categories().length === 0) this.lookups.refresh(); // category names and colors of the charts
     this.learnService.tipOfTheDay().subscribe({ next: (tip) => this.tip.set(tip), error: () => this.tip.set(null) });
-    this.expenseService.list().subscribe({ next: (list) => this.allExpenses.set(list), error: () => {} });
-    this.incomeService.list().subscribe({ next: (list) => this.allIncomes.set(list), error: () => {} });
-    this.goalService.list().subscribe({ next: (list) => this.allGoals.set(list), error: () => {} });
+    this.expenseService.list().subscribe({
+      next: (list) => this.allExpenses.set(list),
+      error: () => {},
+      complete: () => this.expensesLoaded.set(true),
+    });
+    this.incomeService.list().subscribe({
+      next: (list) => this.allIncomes.set(list),
+      error: () => {},
+      complete: () => this.incomesLoaded.set(true),
+    });
+    this.goalService.list().subscribe({
+      next: (list) => this.allGoals.set(list),
+      error: () => {},
+      complete: () => this.goalsLoaded.set(true),
+    });
     this.exchangeRateService.latestFromPen().subscribe({
       next: (rates) => this.rates.set(rates),
       error: () => this.ratesError.set(true),

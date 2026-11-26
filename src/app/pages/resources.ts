@@ -68,7 +68,8 @@ export class ExpensesPage {
       { key: 'montoGasto', label: 'expenses.amount', type: 'number', required: true, min: 0.01, format: 'currency' },
       { key: 'fechaGasto', label: 'expenses.date', type: 'date', required: true, format: 'date', minDate: firstAllowedDate, maxDate: localToday },
       { key: 'idCategoria', label: 'expenses.category', type: 'select', required: true, options: this.lookups.expenseCategories, format: 'option' },
-      { key: 'idComerciante', label: 'expenses.merchant', type: 'select', required: true, options: this.lookups.merchantOptions, format: 'option' },
+      // Only the merchants of the chosen category (the API checks the same rule)
+      { key: 'idComerciante', label: 'expenses.merchant', type: 'select', required: true, options: this.lookups.merchantOptions, format: 'option', filterBy: 'idCategoria' },
       {
         key: 'metodoPagoGasto', label: 'expenses.method', type: 'select', required: true, translate: true, format: 'option',
         options: options('method', ['efectivo', 'tarjeta', 'yape', 'transferencia']),
@@ -119,6 +120,8 @@ export class GoalsPage {
     idKey: 'idMetaAhorro',
     service: inject(SavingGoalService),
     defaults: ownerDefaults(),
+    // Creating or completing a goal can unlock achievements: reload the points shown in the app
+    afterChange: reloadBalance(),
     fields: [
       { key: 'titulo', label: 'goals.name', type: 'text', required: true, maxLength: 150 },
       { key: 'montoObjetivo', label: 'goals.target', type: 'number', required: true, min: 0.01, format: 'currency' },

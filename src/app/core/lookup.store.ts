@@ -23,6 +23,7 @@ export class LookupStore {
       return {
         value: m.idComerciante,
         label: m.nombreComerciante,
+        group: m.idCategoria,
         icon: categoryIcon(category?.urlIconoCategoria),
         color: category?.colorHexCategoria,
       };

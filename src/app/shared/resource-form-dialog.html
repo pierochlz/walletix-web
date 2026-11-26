@@ -10,7 +10,7 @@
           <mat-form-field appearance="outline">
             <mat-label>{{ field.label | t }}</mat-label>
             <mat-select [formControlName]="field.key" [required]="!!field.required">
-              @for (option of field.options?.() ?? []; track option.value) {
+              @for (option of optionsFor(field); track option.value) {
                 <mat-option [value]="option.value">
                   @if (option.icon) {
                     <mat-icon aria-hidden="true" [style.color]="option.color">{{ option.icon }}</mat-icon>

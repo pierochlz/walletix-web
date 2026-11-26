@@ -59,7 +59,9 @@
     <mat-card-subtitle>{{ 'dashboard.evolutionHint' | t }}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    @if (hasMovements()) {
+    @if (!expensesLoaded() || !incomesLoaded()) {
+      <p class="muted">{{ 'app.loading' | t }}</p>
+    } @else if (hasMovements()) {
       <app-line-chart [points]="evolution()" [label]="'dashboard.evolution' | t" [format]="currency" [detail]="money" color="#2563eb" />
     } @else {
       <p class="muted">{{ 'dashboard.noMovements' | t }} <a routerLink="/incomes">{{ 'nav.incomes' | t }}</a> · <a routerLink="/expenses">{{ 'nav.expenses' | t }}</a></p>
@@ -88,7 +90,11 @@
           <small>{{ 'dashboard.progress' | t: { percent: progress(goal) } }}</small>
         </div>
       } @empty {
-        <p class="muted">{{ 'dashboard.noGoals' | t }} <a routerLink="/goals">{{ 'form.new' | t }}</a></p>
+        @if (goalsLoaded()) {
+          <p class="muted">{{ 'dashboard.noGoals' | t }} <a routerLink="/goals">{{ 'form.new' | t }}</a></p>
+        } @else {
+          <p class="muted">{{ 'app.loading' | t }}</p>
+        }
       }
     </mat-card-content>
   </mat-card>
@@ -110,7 +116,11 @@
             </span>
           </mat-list-item>
         } @empty {
-          <p class="muted">{{ 'dashboard.noExpenses' | t }} <a routerLink="/expenses">{{ 'form.new' | t }}</a></p>
+          @if (expensesLoaded()) {
+            <p class="muted">{{ 'dashboard.noExpenses' | t }} <a routerLink="/expenses">{{ 'form.new' | t }}</a></p>
+          } @else {
+            <p class="muted">{{ 'app.loading' | t }}</p>
+          }
         }
       </mat-list>
     </mat-card-content>

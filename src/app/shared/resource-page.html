@@ -91,7 +91,15 @@
       <tr mat-header-row *matHeaderRowDef="columns()"></tr>
       <tr mat-row *matRowDef="let row; columns: columns()"></tr>
       <tr class="mat-mdc-row" *matNoDataRow>
-        <td class="mat-mdc-cell empty" [attr.colspan]="columns().length">{{ 'form.empty' | t }}</td>
+        <td class="mat-mdc-cell empty" [attr.colspan]="columns().length">
+          @if (loading()) {
+            {{ 'app.loading' | t }}
+          } @else if (dataSource.filter) {
+            {{ 'form.noResults' | t: { text: dataSource.filter } }}
+          } @else {
+            {{ 'form.empty' | t }}
+          }
+        </td>
       </tr>
     </table>
   </div>
