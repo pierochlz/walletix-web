@@ -19,6 +19,8 @@ import { Expense, Income, SavingGoal } from '../../core/models';
 import { onlyOwn } from '../../core/ownership';
 import { average, balanceEvolution, byCategory, isAntExpense, lastMonths, monthlyFlows, monthRange, rangeError } from '../../core/finance';
 import { LookupStore } from '../../core/lookup.store';
+import { blobErrorMessage, reportFileName, ReportService, saveFile } from '../../core/report.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BarChart, DonutChart, LineChart } from '../../shared/charts';
 import { ExpenseService, IncomeService, SavingGoalService } from '../../core/resource.services';
 import { LearnService } from '../../core/learn.service';
@@ -57,6 +59,8 @@ export class Dashboard implements OnInit {
   private exchangeRateService = inject(ExchangeRateService);
   private learnService = inject(LearnService);
   private lookups = inject(LookupStore);
+  private reports = inject(ReportService);
+  private snackBar = inject(MatSnackBar);
 
   // "Tip de 30 segundos" of the report: a different financial tip each day
   readonly tip = signal<LearnDetail | null>(null);
@@ -148,6 +152,24 @@ export class Dashboard implements OnInit {
     this.from.set(lastMonths(this.thisMonth, months)[0]);
     this.to.set(this.thisMonth);
     this.applyRange();
+  }
+
+  // US39: PDF of the months of the comparison (the range that is on screen)
+  readonly downloading = signal(false);
+  downloadPdf(): void {
+    const { from, to } = this.applied();
+    this.downloading.set(true);
+    this.reports.pdf(from, to).subscribe({
+      next: (file) => {
+        this.downloading.set(false);
+        saveFile(file, reportFileName(from, to));
+        this.snackBar.open(this.i18n.t('dashboard.pdfDone'), 'OK', { duration: 3000, panelClass: 'snack-success' });
+      },
+      error: async (err) => {
+        this.downloading.set(false);
+        this.snackBar.open(await blobErrorMessage(err, this.i18n.t('dashboard.pdfError')), 'OK', { duration: 6000 });
+      },
+    });
   }
 
   applyRange(): void {

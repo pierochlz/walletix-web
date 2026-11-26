@@ -161,6 +161,11 @@
       <button mat-flat-button type="submit">{{ 'dashboard.update' | t }}</button>
       <button mat-stroked-button type="button" (click)="shortcut(3)">{{ 'dashboard.last3' | t }}</button>
       <button mat-stroked-button type="button" (click)="shortcut(6)">{{ 'dashboard.last6' | t }}</button>
+      <!-- US39: export my data in PDF -->
+      <button mat-flat-button type="button" class="pdf" (click)="downloadPdf()" [disabled]="downloading()"
+              [attr.aria-label]="'dashboard.pdfLabel' | t: { from: monthLabel(applied().from, true), to: monthLabel(applied().to, true) }">
+        <mat-icon aria-hidden="true">picture_as_pdf</mat-icon>{{ (downloading() ? 'dashboard.pdfWorking' : 'dashboard.pdf') | t }}
+      </button>
     </form>
     @if (rangeErrorKey()) {
       <p class="api-error" role="alert">{{ rangeErrorKey()! | t }}</p>

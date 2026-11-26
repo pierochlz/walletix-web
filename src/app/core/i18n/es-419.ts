@@ -461,4 +461,9 @@ export const ES_419: Record<string, string> = {
   'profile.streakHint': 'Registra tus gastos cada día para no perderla',
   'profile.habitsWindow': 'Hábitos calculados con tus gastos de los últimos 90 días.',
   'profile.editTitle': 'Mis datos',
+  'dashboard.pdf': 'Descargar PDF',
+  'dashboard.pdfWorking': 'Generando PDF…',
+  'dashboard.pdfLabel': 'Descargar el reporte en PDF de {from} a {to}',
+  'dashboard.pdfDone': 'Reporte descargado',
+  'dashboard.pdfError': 'No se pudo generar el reporte. Inténtalo de nuevo.',
 };

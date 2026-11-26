@@ -461,4 +461,9 @@ export const EN_US: Record<string, string> = {
   'profile.streakHint': 'Register your expenses every day to keep it',
   'profile.habitsWindow': 'Habits calculated with your expenses of the last 90 days.',
   'profile.editTitle': 'My data',
+  'dashboard.pdf': 'Download PDF',
+  'dashboard.pdfWorking': 'Creating PDF…',
+  'dashboard.pdfLabel': 'Download the PDF report from {from} to {to}',
+  'dashboard.pdfDone': 'Report downloaded',
+  'dashboard.pdfError': 'The report could not be created. Try again.',
 };
