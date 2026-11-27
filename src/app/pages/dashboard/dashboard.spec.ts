@@ -13,7 +13,7 @@ describe('Dashboard balance card', () => {
   const api = environment.apiUrl;
   const today = `${localMonth()}-10`;
 
-  function render(expenses: unknown[], incomes: unknown[], budgets: unknown[] = [], challenges = 0) {
+  function render(expenses: unknown[], incomes: unknown[], budgets: unknown[] = [], challenges = 0, holidays?: unknown[]) {
     TestBed.configureTestingModule({
       imports: [Dashboard],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
@@ -28,6 +28,7 @@ describe('Dashboard balance card', () => {
     http.expectOne(`${api}/presupuestos`).flush(budgets);
     const participation = { idUsuarioDesafio: 1 };
     http.expectOne(`${api}/retos/resumen`).flush({ activos: Array(challenges).fill(participation), historial: [] });
+    if (holidays) http.expectOne(environment.holidaysUrl).flush(holidays); // otherwise the generic 503 below
     // Tip of the day (none), categories and merchants (empty), exchange rates (service down)
     http.match(() => true).forEach((req) => {
       if (req.request.url.includes('tip-del-dia')) req.flush(null);
@@ -109,5 +110,35 @@ describe('Dashboard balance card', () => {
           : req.request.url.startsWith(api) ? req.flush([])
           : req.flush('down', { status: 503, statusText: 'Unavailable' }),
       );
+  });
+
+  // Second third-party API (Nager.Date)
+  it('shows the next 3 public holidays with how many days are left', () => {
+    const plusDays = (n: number) => {
+      const d = new Date();
+      d.setDate(d.getDate() + n);
+      return d.toLocaleDateString('en-CA');
+    };
+    const holidays = [
+      { date: plusDays(40), localName: 'Año Nuevo', name: "New Year's Day" },
+      { date: plusDays(1), localName: 'Navidad', name: 'Christmas Day' },
+      { date: plusDays(-3), localName: 'Ya pasó', name: 'Already passed' },
+      { date: plusDays(12), localName: 'Batalla de Ayacucho', name: 'Battle of Ayacucho' },
+      { date: plusDays(90), localName: 'Jueves Santo', name: 'Maundy Thursday' },
+    ];
+    const page = render([], [], [], 0, holidays);
+    const items = [...page.querySelectorAll('.holiday-list li')].map((li) => li.textContent?.replace(/\s+/g, ' ') ?? '');
+    expect(items.length).toBe(3);
+    expect(items[0]).toContain('Christmas Day');
+    expect(items[0]).toContain('Tomorrow');
+    expect(items[1]).toContain('In 12 days');
+    expect(items[2]).toContain("New Year's Day");
+    expect(page.querySelector('.holidays')?.textContent).not.toContain('Already passed');
+  });
+
+  it('if the holidays service is down, it says so and the rest of the dashboard works', () => {
+    const page = render([], []); // the generic flush answers 503 to the third-party services
+    expect(page.querySelector('.holidays')?.textContent).toContain('could not be loaded');
+    expect(page.querySelector('.hero-value')?.textContent).toContain('1,500.00');
   });
 });

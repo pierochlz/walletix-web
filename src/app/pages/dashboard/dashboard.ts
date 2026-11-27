@@ -29,6 +29,7 @@ import { LearnDetail } from '../../core/models';
 import { Skeleton } from '../../shared/skeleton';
 import { categoryIcon } from '../../core/category-icons';
 import { onboarding, onboardingHiddenKey } from '../../core/onboarding';
+import { HolidaysCard } from './holidays-card';
 import { ChallengesService } from '../../core/challenges.service';
 
 @Component({
@@ -51,7 +52,7 @@ import { ChallengesService } from '../../core/challenges.service';
     CurrencyPipe,
     DatePipe,
     DecimalPipe,
-    TranslatePipe, Skeleton,
+    TranslatePipe, Skeleton, HolidaysCard,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
@@ -68,6 +69,7 @@ export class Dashboard implements OnInit {
   private reports = inject(ReportService);
   private budgetService = inject(BudgetService);
   private challengesService = inject(ChallengesService);
+
 
   // ---------- First steps for a new user (instead of a dashboard full of empty cards) ----------
   // null until the API answers: the card is not shown while it does not know what is done

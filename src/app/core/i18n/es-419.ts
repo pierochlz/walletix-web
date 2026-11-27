@@ -494,4 +494,13 @@ export const ES_419: Record<string, string> = {
   'onboarding.go': 'Ir',
   'onboarding.done': 'Hecho',
   'onboarding.hide': 'Ocultar primeros pasos',
+  'holidays.title': 'Próximos feriados',
+  'holidays.hint': 'Los feriados largos suelen subir los gastos: planifícalos con tu presupuesto',
+  'holidays.today': 'Hoy',
+  'holidays.tomorrow': 'Mañana',
+  'holidays.inDays': 'En {days} días',
+  'holidays.none': 'No hay feriados próximos.',
+  'holidays.error': 'No se pudieron cargar los feriados en este momento. El resto de Walletix funciona normal.',
+  'holidays.source': 'Feriados de Perú de Nager.Date',
+  'holidays.checkBudget': 'Revisar mis presupuestos',
 };

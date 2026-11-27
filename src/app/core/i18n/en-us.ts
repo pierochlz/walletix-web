@@ -494,4 +494,13 @@ export const EN_US: Record<string, string> = {
   'onboarding.go': 'Go',
   'onboarding.done': 'Done',
   'onboarding.hide': 'Hide first steps',
+  'holidays.title': 'Upcoming holidays',
+  'holidays.hint': 'Long weekends usually raise spending: plan them with your budget',
+  'holidays.today': 'Today',
+  'holidays.tomorrow': 'Tomorrow',
+  'holidays.inDays': 'In {days} days',
+  'holidays.none': 'No upcoming holidays.',
+  'holidays.error': 'The holidays could not be loaded right now. The rest of Walletix works as usual.',
+  'holidays.source': 'Public holidays in Peru from Nager.Date',
+  'holidays.checkBudget': 'Check my budgets',
 };
