@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { ExchangeRates, ExchangeRateService } from '../../core/exchange-rate.service';
@@ -22,11 +23,13 @@ import { LookupStore } from '../../core/lookup.store';
 import { blobErrorMessage, reportFileName, ReportService, saveFile } from '../../core/report.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BarChart, DonutChart, LineChart } from '../../shared/charts';
-import { ExpenseService, IncomeService, SavingGoalService } from '../../core/resource.services';
+import { BudgetService, ExpenseService, IncomeService, SavingGoalService } from '../../core/resource.services';
 import { LearnService } from '../../core/learn.service';
 import { LearnDetail } from '../../core/models';
 import { Skeleton } from '../../shared/skeleton';
 import { categoryIcon } from '../../core/category-icons';
+import { onboarding, onboardingHiddenKey } from '../../core/onboarding';
+import { ChallengesService } from '../../core/challenges.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -44,6 +47,7 @@ import { categoryIcon } from '../../core/category-icons';
     MatIconModule,
     MatListModule,
     MatProgressBarModule,
+    MatTooltipModule,
     CurrencyPipe,
     DatePipe,
     DecimalPipe,
@@ -62,6 +66,34 @@ export class Dashboard implements OnInit {
   private learnService = inject(LearnService);
   private lookups = inject(LookupStore);
   private reports = inject(ReportService);
+  private budgetService = inject(BudgetService);
+  private challengesService = inject(ChallengesService);
+
+  // ---------- First steps for a new user (instead of a dashboard full of empty cards) ----------
+  // null until the API answers: the card is not shown while it does not know what is done
+  private readonly hasBudget = signal<boolean | null>(null);
+  private readonly hasChallenge = signal<boolean | null>(null);
+  readonly onboardingHidden = signal(false);
+  readonly firstSteps = computed(() =>
+    onboarding(this.incomes().length > 0, this.hasBudget() === true, this.hasChallenge() === true),
+  );
+  readonly showFirstSteps = computed(
+    () =>
+      this.incomesLoaded() &&
+      this.hasBudget() !== null &&
+      this.hasChallenge() !== null &&
+      !this.firstSteps().complete &&
+      !this.onboardingHidden(),
+  );
+
+  hideFirstSteps(): void {
+    this.onboardingHidden.set(true);
+    try {
+      localStorage.setItem(onboardingHiddenKey(this.myId()), '1');
+    } catch {
+      // private mode: it is hidden only until the page is reloaded
+    }
+  }
   private snackBar = inject(MatSnackBar);
 
   // "Tip de 30 segundos" of the report: a different financial tip each day
@@ -219,6 +251,19 @@ export class Dashboard implements OnInit {
 
   ngOnInit(): void {
     if (this.lookups.categories().length === 0) this.lookups.refresh(); // category names and colors of the charts
+    try {
+      this.onboardingHidden.set(localStorage.getItem(onboardingHiddenKey(this.auth.user()?.idUsuario)) === '1');
+    } catch {
+      this.onboardingHidden.set(false);
+    }
+    this.budgetService.list().subscribe({
+      next: (list) => this.hasBudget.set(onlyOwn(list, this.myId()).length > 0),
+      error: () => this.hasBudget.set(null),
+    });
+    this.challengesService.summary().subscribe({
+      next: (s) => this.hasChallenge.set(s.activos.length + s.historial.length > 0),
+      error: () => this.hasChallenge.set(null),
+    });
     this.learnService.tipOfTheDay().subscribe({ next: (tip) => this.tip.set(tip), error: () => this.tip.set(null) });
     this.expenseService.list().subscribe({
       next: (list) => this.allExpenses.set(list),

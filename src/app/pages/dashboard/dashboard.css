@@ -401,3 +401,63 @@ h2 {
   --mat-progress-bar-active-indicator-height: 8px;
   border-radius: 8px;
 }
+
+/* First steps of a new user */
+.first-steps {
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.fs-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fs-head p {
+  margin: 2px 0 10px;
+}
+
+.first-steps mat-progress-bar {
+  --mat-progress-bar-track-height: 6px;
+  --mat-progress-bar-active-indicator-height: 6px;
+  border-radius: 6px;
+}
+
+.fs-steps {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 10px;
+}
+
+.fs-steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+}
+
+.fs-steps mat-icon {
+  flex: none;
+  color: var(--mat-sys-primary);
+}
+
+.fs-label {
+  flex: 1;
+}
+
+.fs-steps li.done .fs-label {
+  color: var(--mat-sys-on-surface-variant);
+  text-decoration: line-through;
+}
+
+.fs-state {
+  font: var(--mat-sys-label-medium);
+  color: var(--mat-sys-primary);
+}

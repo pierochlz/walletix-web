@@ -99,6 +99,11 @@ export class ResourcePage implements OnInit, AfterViewInit {
   readonly iconOf = categoryIcon;
 
   // Text shown in a select-type column (the name of the category instead of its id)
+  // The option of a select-type cell (its icon and color are shown next to the name, like in the dashboard)
+  optionOf(field: FieldDef, value: unknown) {
+    return field.options?.().find((o) => o.value === value) ?? null;
+  }
+
   optionLabel(field: FieldDef, value: unknown): string {
     const option = field.options?.().find((o) => o.value === value);
     if (!option) return String(value ?? '');

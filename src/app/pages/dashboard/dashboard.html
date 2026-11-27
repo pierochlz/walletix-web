@@ -9,6 +9,35 @@
 
 @if (view() === 'summary') {
 
+<!-- First steps of a new user: 3 steps with progress; it disappears when they are done (or when hidden) -->
+@if (showFirstSteps()) {
+  <mat-card appearance="outlined" class="first-steps" role="region" [attr.aria-label]="'onboarding.title' | t">
+    <div class="fs-head">
+      <div>
+        <h2>{{ 'onboarding.title' | t }}</h2>
+        <p class="muted">{{ 'onboarding.subtitle' | t: { done: firstSteps().done, total: firstSteps().steps.length } }}</p>
+      </div>
+      <button mat-icon-button type="button" (click)="hideFirstSteps()" [attr.aria-label]="'onboarding.hide' | t" [matTooltip]="'onboarding.hide' | t">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    </div>
+    <mat-progress-bar mode="determinate" [value]="(firstSteps().done / firstSteps().steps.length) * 100" [attr.aria-label]="'onboarding.subtitle' | t: { done: firstSteps().done, total: firstSteps().steps.length }" />
+    <ol class="fs-steps">
+      @for (step of firstSteps().steps; track step.key) {
+        <li [class.done]="step.done">
+          <mat-icon aria-hidden="true">{{ step.done ? 'check_circle' : step.icon }}</mat-icon>
+          <span class="fs-label">{{ step.label | t }}</span>
+          @if (step.done) {
+            <span class="fs-state">{{ 'onboarding.done' | t }}</span>
+          } @else {
+            <a mat-stroked-button [routerLink]="step.link">{{ 'onboarding.go' | t }}</a>
+          }
+        </li>
+      }
+    </ol>
+  </mat-card>
+}
+
 <!-- Summary: the balance is the main figure; the month figures are smaller next to it -->
 <section class="overview" [attr.aria-label]="'dashboard.viewSummary' | t">
   <mat-card class="hero">

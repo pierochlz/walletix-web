@@ -92,3 +92,11 @@ table {
   margin-right: 6px;
   border: 1px solid var(--mat-sys-outline-variant);
 }
+
+/* Icon of the category / merchant next to its name */
+.option-icon {
+  margin-right: 6px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}

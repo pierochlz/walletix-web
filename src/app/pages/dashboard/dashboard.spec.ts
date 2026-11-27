@@ -13,7 +13,7 @@ describe('Dashboard balance card', () => {
   const api = environment.apiUrl;
   const today = `${localMonth()}-10`;
 
-  function render(expenses: unknown[], incomes: unknown[]) {
+  function render(expenses: unknown[], incomes: unknown[], budgets: unknown[] = [], challenges = 0) {
     TestBed.configureTestingModule({
       imports: [Dashboard],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
@@ -25,6 +25,9 @@ describe('Dashboard balance card', () => {
     http.expectOne(`${api}/gastos`).flush(expenses);
     http.expectOne(`${api}/ingresos`).flush(incomes);
     http.expectOne(`${api}/metas-ahorro`).flush([]);
+    http.expectOne(`${api}/presupuestos`).flush(budgets);
+    const participation = { idUsuarioDesafio: 1 };
+    http.expectOne(`${api}/retos/resumen`).flush({ activos: Array(challenges).fill(participation), historial: [] });
     // Tip of the day (none), categories and merchants (empty), exchange rates (service down)
     http.match(() => true).forEach((req) => {
       if (req.request.url.includes('tip-del-dia')) req.flush(null);
@@ -53,5 +56,33 @@ describe('Dashboard balance card', () => {
     const expense = { idGasto: 1, idUsuario: 7, idCategoria: 2, idComerciante: 1, descripcionGasto: 'Laptop', montoGasto: 300, fechaGasto: today };
     const page = render([expense], [income]);
     expect(page.querySelector('.hero-note')?.textContent).toContain('spent S/ 200.00 more');
+  });
+
+  // First steps of a new user
+  it('a new user sees the 3 first steps, each one with a link to its page', () => {
+    const page = render([], []);
+    const card = page.querySelector('.first-steps');
+    expect(card).not.toBeNull();
+    expect(card?.textContent).toContain('0 of 3');
+    const links = [...card!.querySelectorAll('a')].map((a) => a.getAttribute('href'));
+    expect(links).toEqual(['/incomes', '/budgets', '/challenges']);
+  });
+
+  it('marks the steps already done and hides the card when the 3 are done', () => {
+    const income = { idIngreso: 1, idUsuario: 7, idCategoria: 1, monto: 100, fecha: today };
+    const budget = { idPresupuesto: 1, idUsuario: 7, idCategoria: 2, mes: 1, anio: 2026, montoAsignado: 50 };
+    const halfway = render([], [income]);
+    expect(halfway.querySelector('.first-steps')?.textContent).toContain('1 of 3');
+    expect(halfway.querySelectorAll('.fs-steps li.done').length).toBe(1);
+
+    TestBed.resetTestingModule();
+    const finished = render([], [income], [budget], 1);
+    expect(finished.querySelector('.first-steps')).toBeNull();
+  });
+
+  it('a budget of another user (seen by an ADMIN) does not count as my step', () => {
+    const othersBudget = { idPresupuesto: 9, idUsuario: 99, idCategoria: 2, mes: 1, anio: 2026, montoAsignado: 50 };
+    const page = render([], [], [othersBudget]);
+    expect(page.querySelectorAll('.fs-steps li.done').length).toBe(0);
   });
 });

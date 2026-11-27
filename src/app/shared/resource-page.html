@@ -51,6 +51,10 @@
                 </mat-icon>
               }
               @case ('option') {
+                @let opt = optionOf(field, row[field.key]);
+                @if (opt?.icon) {
+                  <mat-icon class="row-icon option-icon" [style.color]="opt?.color" aria-hidden="true">{{ opt?.icon }}</mat-icon>
+                }
                 {{ optionLabel(field, row[field.key]) }}
               }
               @case ('icon') {

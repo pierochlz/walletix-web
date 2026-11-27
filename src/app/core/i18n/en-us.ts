@@ -486,4 +486,12 @@ export const EN_US: Record<string, string> = {
   'dashboard.monthSaved': 'This month you are {amount} ahead',
   'dashboard.monthOverspent': 'This month you spent {amount} more than you earned',
   'dashboard.monthEmpty': 'No movements this month yet',
+  'onboarding.title': 'First steps',
+  'onboarding.subtitle': '{done} of {total} done: complete these steps to get the most out of Walletix',
+  'onboarding.income': 'Record your first income',
+  'onboarding.budget': 'Create a budget for this month',
+  'onboarding.challenge': 'Join a challenge or create your own',
+  'onboarding.go': 'Go',
+  'onboarding.done': 'Done',
+  'onboarding.hide': 'Hide first steps',
 };
