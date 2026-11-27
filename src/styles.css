@@ -196,3 +196,19 @@ button.danger {
   font: var(--mat-sys-body-small) !important;
   color: var(--mat-sys-on-surface-variant) !important;
 }
+
+/* Brand mark, the same as the landing page and the favicon: white wallet on an emerald square */
+.brand {
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+}
+.brand mat-icon {
+  box-sizing: content-box;
+  width: 22px;
+  height: 22px;
+  padding: 5px;
+  border-radius: 9px;
+  font-size: 22px;
+  background: #006c4e;
+  color: #ffffff;
+}
