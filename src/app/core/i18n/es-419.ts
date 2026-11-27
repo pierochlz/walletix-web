@@ -485,4 +485,5 @@ export const ES_419: Record<string, string> = {
   'form.noResults': 'No hay resultados para «{text}».',
   'dashboard.monthSaved': 'Este mes llevas {amount} a favor',
   'dashboard.monthOverspent': 'Este mes gastaste {amount} más de lo que ingresaste',
+  'dashboard.monthEmpty': 'Aún no tienes movimientos este mes',
 };

@@ -17,7 +17,9 @@
       <p class="hero-label">{{ 'dashboard.balance' | t }}</p>
     </div>
     <p class="hero-value amount">{{ auth.user()?.saldoActualUsuario ?? 0 | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale() }}</p>
-    @if (expensesLoaded() && incomesLoaded()) {
+    @if (expensesLoaded() && incomesLoaded() && !monthIncome() && !monthExpense()) {
+      <p class="hero-note">{{ 'dashboard.monthEmpty' | t }}</p>
+    } @else if (expensesLoaded() && incomesLoaded()) {
       <p class="hero-note">
         <mat-icon aria-hidden="true">{{ monthNet() >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
         {{ (monthNet() >= 0 ? 'dashboard.monthSaved' : 'dashboard.monthOverspent') | t: { amount: (absMonthNet() | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale()) ?? '' } }}

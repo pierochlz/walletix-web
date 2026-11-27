@@ -92,7 +92,7 @@
       <tr mat-row *matRowDef="let row; columns: columns()"></tr>
       <tr class="mat-mdc-row" *matNoDataRow>
         <td class="mat-mdc-cell empty" [attr.colspan]="columns().length">
-          @if (loading()) {
+          @if (loading() && !dataSource.data.length) {
             <app-skeleton variant="rows" [count]="4" />
           } @else if (dataSource.filter) {
             {{ 'form.noResults' | t: { text: dataSource.filter } }}
