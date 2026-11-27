@@ -5,6 +5,7 @@
 .sidenav {
   width: 248px;
   border-right: 1px solid var(--mat-sys-outline-variant);
+  background: var(--wx-card-bg);
 }
 
 .brand {
@@ -27,7 +28,8 @@
   position: sticky;
   top: 0;
   z-index: 2;
-  background: var(--mat-sys-surface-container);
+  background: var(--wx-card-bg);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
   gap: 4px;
 }
 

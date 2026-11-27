@@ -32,6 +32,7 @@ import { ChallengeSummary, Expense, Income, Medal, SavingGoal } from '../../core
 import { onlyOwn } from '../../core/ownership';
 import { ageOn, financialStats, initials, spendingHabits } from '../../core/profile-stats';
 import { ExpenseService, IncomeService, SavingGoalService } from '../../core/resource.services';
+import { Skeleton } from '../../shared/skeleton';
 
 // US36: my profile with my financial statistics and spending habits,
 // plus edit my data (PUT /usuarios/actualiza) and change my password (PUT /usuarios/contrasena)
@@ -52,7 +53,7 @@ import { ExpenseService, IncomeService, SavingGoalService } from '../../core/res
     RouterLink,
     CurrencyPipe,
     DecimalPipe,
-    TranslatePipe,
+    TranslatePipe, Skeleton,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.css',

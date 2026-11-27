@@ -483,4 +483,6 @@ export const EN_US: Record<string, string> = {
   'form.cents': 'Use at most 2 decimals (cents)',
   'profile.emailChanged': 'Your email changed. Sign in with the new email.',
   'form.noResults': 'No results for "{text}".',
+  'dashboard.monthSaved': 'This month you are {amount} ahead',
+  'dashboard.monthOverspent': 'This month you spent {amount} more than you earned',
 };

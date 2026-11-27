@@ -43,6 +43,9 @@
 
   @if (loading()) {
     <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
+    @if (!items().length) {
+      <app-skeleton variant="cards" [count]="6" />
+    }
   }
   @if (loadError()) {
     <p class="api-error" role="alert">{{ loadError() }}</p>

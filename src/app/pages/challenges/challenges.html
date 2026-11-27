@@ -16,6 +16,10 @@
   @if (loading() || refreshing()) {
     <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
   }
+  @if (loading() && !s) {
+    <app-skeleton variant="cards" [count]="4" />
+    <app-skeleton variant="cards" [count]="2" />
+  }
   @if (loadError()) {
     <p class="api-error" role="alert">{{ loadError() }}</p>
   }

@@ -22,12 +22,13 @@ import { ConfirmDialog } from '../../shared/confirm-dialog';
 import { ResourceConfig } from '../../shared/resource-config';
 import { ResourceFormDialog } from '../../shared/resource-form-dialog';
 import { CURRENT_YEAR, months, ownerDefaults } from '../resources';
+import { Skeleton } from '../../shared/skeleton';
 
 // Budgets by month: the user moves between months and sees, per category,
 // how much was assigned, how much was spent and how much is left (green / amber / red).
 @Component({
   selector: 'app-budgets-page',
-  imports: [MatButtonModule, MatCardModule, MatIconModule, MatProgressBarModule, MatTooltipModule, CurrencyPipe, TranslatePipe],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, MatProgressBarModule, MatTooltipModule, CurrencyPipe, TranslatePipe, Skeleton],
   templateUrl: './budgets.html',
   styleUrl: './budgets.css',
 })

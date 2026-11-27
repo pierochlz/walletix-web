@@ -20,13 +20,14 @@ import { NotificationStore } from '../../core/notification.store';
 import { CreateChallengeDialog } from './create-challenge-dialog';
 import { MessageDialog, MessageDialogData } from './message-dialog';
 import { ShareMedalDialog } from './share-medal-dialog';
+import { Skeleton } from '../../shared/skeleton';
 
 // "Centro de Retos y Logros" of the report (US26-US30):
 // summary (level, effectiveness, protected money, streak), active challenges with daily progress,
 // available challenges with requirements, "create a new challenge" and the medal showcase.
 @Component({
   selector: 'app-challenges-page',
-  imports: [MatCardModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatTooltipModule, CurrencyPipe, DatePipe, DecimalPipe, TranslatePipe],
+  imports: [MatCardModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatTooltipModule, CurrencyPipe, DatePipe, DecimalPipe, TranslatePipe, Skeleton],
   templateUrl: './challenges.html',
   styleUrl: './challenges.css',
 })

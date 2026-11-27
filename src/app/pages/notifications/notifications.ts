@@ -16,11 +16,12 @@ import { AppNotification } from '../../core/models';
 import { NotificationStore } from '../../core/notification.store';
 import { filterNotifications, NotificationFilter, notificationIcon, relativeTime } from '../../core/notifications';
 import { ConfirmDialog } from '../../shared/confirm-dialog';
+import { Skeleton } from '../../shared/skeleton';
 
 // US22: panel with all the notifications · US23: tabs All / Unread / Read · US24: mark as read / unread
 @Component({
   selector: 'app-notifications-page',
-  imports: [RouterLink, MatButtonModule, MatButtonToggleModule, MatIconModule, MatProgressBarModule, MatTooltipModule, DatePipe, TranslatePipe],
+  imports: [RouterLink, MatButtonModule, MatButtonToggleModule, MatIconModule, MatProgressBarModule, MatTooltipModule, DatePipe, TranslatePipe, Skeleton],
   templateUrl: './notifications.html',
   styleUrl: './notifications.css',
 })

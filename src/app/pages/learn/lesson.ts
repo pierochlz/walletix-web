@@ -17,11 +17,12 @@ import { allAnswered, categoryLabelKey, learnIcon, paragraphs } from '../../core
 import { LearnService } from '../../core/learn.service';
 import { LearnDetail, QuizResult } from '../../core/models';
 import { NotificationStore } from '../../core/notification.store';
+import { Skeleton } from '../../shared/skeleton';
 
 // An opened micro-lesson or tip (US34) and its quiz (US35). The API grades the answers.
 @Component({
   selector: 'app-lesson-page',
-  imports: [RouterLink, MatButtonModule, MatCardModule, MatIconModule, MatProgressBarModule, MatRadioModule, TranslatePipe],
+  imports: [RouterLink, MatButtonModule, MatCardModule, MatIconModule, MatProgressBarModule, MatRadioModule, TranslatePipe, Skeleton],
   templateUrl: './lesson.html',
   styleUrl: './lesson.css',
 })

@@ -19,6 +19,7 @@ import { TranslatePipe } from '../core/i18n/translate.pipe';
 import { ConfirmDialog } from './confirm-dialog';
 import { FieldDef, ResourceConfig } from './resource-config';
 import { ResourceFormDialog } from './resource-form-dialog';
+import { Skeleton } from './skeleton';
 
 // Generic CRUD page: table with sort, filter and pagination + dialogs to create, edit and delete
 @Component({
@@ -35,7 +36,7 @@ import { ResourceFormDialog } from './resource-form-dialog';
     MatTooltipModule,
     CurrencyPipe,
     DatePipe,
-    TranslatePipe,
+    TranslatePipe, Skeleton,
   ],
   templateUrl: './resource-page.html',
   styleUrl: './resource-page.css',
@@ -74,7 +75,12 @@ export class ResourcePage implements OnInit, AfterViewInit {
     this.loading.set(true);
     this.config().service.list().subscribe({
       next: (rows) => {
-        this.dataSource.data = rows;
+        // Newest first (expenses, incomes): the date column from the most recent to the oldest
+        // (only dates of things that already happened; a goal's deadline keeps the API order)
+        const dateKey = this.config().fields.find((f) => f.format === 'date' && f.maxDate)?.key;
+        this.dataSource.data = dateKey
+          ? [...rows].sort((a, b) => String(b[dateKey] ?? '').localeCompare(String(a[dateKey] ?? '')))
+          : rows;
         this.loading.set(false);
         this.loadError.set(null);
       },

@@ -49,9 +49,11 @@ function niceStep(raw: number): number {
         <line class="grid" [attr.x1]="pad.left" [attr.x2]="width() - pad.right" [attr.y1]="y(t)" [attr.y2]="y(t)" />
         <text class="tick" [attr.x]="pad.left - 8" [attr.y]="y(t) + 4" text-anchor="end">{{ format()(t) }}</text>
       }
-      <polyline [attr.points]="line()" fill="none" [attr.stroke]="color()" stroke-width="3" stroke-linejoin="round" />
+      <!-- Soft area under the line + the line itself (style.* so the color can be a theme variable) -->
+      <polygon class="area" [attr.points]="area()" [style.fill]="color()" />
+      <polyline [attr.points]="line()" fill="none" [style.stroke]="color()" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
       @for (p of points(); track $index) {
-        <circle [attr.cx]="x($index)" [attr.cy]="y(p.value)" r="5" [attr.fill]="color()">
+        <circle class="dot" [attr.cx]="x($index)" [attr.cy]="y(p.value)" r="5" [style.stroke]="color()">
           <title>{{ p.label }}: {{ exact()(p.value) }}</title>
         </circle>
         <text class="tick" [attr.x]="x($index)" [attr.y]="height - 8" text-anchor="middle">{{ p.label }}</text>
@@ -69,7 +71,8 @@ function niceStep(raw: number): number {
 export class LineChart {
   readonly points = input.required<{ label: string; value: number }[]>();
   readonly label = input.required<string>();
-  readonly color = input('#2563eb');
+  // Default: the primary color of the theme (emerald), also right in dark mode
+  readonly color = input('var(--mat-sys-primary)');
   readonly format = input<(n: number) => string>((n) => String(n)); // axis (rounded)
   readonly detail = input<((n: number) => string) | null>(null); // tooltip and hidden table (exact)
   readonly exact = computed(() => this.detail() ?? this.format());
@@ -79,6 +82,13 @@ export class LineChart {
   readonly pad = PAD;
   readonly scale = computed(() => axis(this.points().map((p) => p.value)));
   readonly line = computed(() => this.points().map((p, i) => `${this.x(i)},${this.y(p.value)}`).join(' '));
+  // Closed shape from the line down to the bottom of the chart
+  readonly area = computed(() => {
+    const n = this.points().length;
+    if (!n) return '';
+    const bottom = this.y(this.scale().min);
+    return `${this.x(0)},${bottom} ${this.line()} ${this.x(n - 1)},${bottom}`;
+  });
 
   x(i: number): number {
     const n = this.points().length;
@@ -109,7 +119,7 @@ export interface BarSeries {
       @for (l of labels(); track $index; let i = $index) {
         @for (s of series(); track s.name; let j = $index) {
           <rect [attr.x]="barX(i, j)" [attr.y]="y(s.values[i])" [attr.width]="barWidth()" [attr.height]="barHeight(s.values[i])"
-                [attr.fill]="s.color" rx="3">
+                [style.fill]="s.color" rx="4">
             <title>{{ l }} · {{ s.name }}: {{ exact()(s.values[i]) }}</title>
           </rect>
         }

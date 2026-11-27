@@ -87,3 +87,13 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+.area {
+  fill-opacity: 0.12;
+  stroke: none;
+}
+
+.dot {
+  fill: var(--wx-card-bg);
+  stroke-width: 3;
+}

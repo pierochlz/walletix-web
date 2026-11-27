@@ -14,6 +14,60 @@
   --wx-on-success-bg: light-dark(#14532d, #dcfce7);
   --wx-warning-bg: light-dark(#fef3c7, #78350f);
   --wx-on-warning-bg: light-dark(#78350f, #fef3c7);
+
+  /* Depth: in light mode the page is a soft gray and the cards white; in dark mode the cards are a step lighter
+     than the page. Before, cards and page had the same color and everything looked flat. */
+  --wx-page-bg: light-dark(var(--mat-sys-surface-container-low), var(--mat-sys-surface));
+  --wx-card-bg: light-dark(var(--mat-sys-surface-container-lowest), var(--mat-sys-surface-container));
+  --wx-card-shadow: light-dark(0 1px 2px rgb(15 23 42 / 0.06), none);
+
+  --mat-card-outlined-container-color: var(--wx-card-bg);
+  --mat-card-outlined-outline-color: var(--mat-sys-outline-variant);
+  --mat-card-outlined-container-shape: 16px;
+}
+
+body {
+  background-color: var(--wx-page-bg);
+}
+
+.mat-mdc-card-outlined {
+  box-shadow: var(--wx-card-shadow);
+}
+
+/* Amounts line up when they are one under another (tables, cards) */
+.mat-mdc-cell,
+.value,
+.amount {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Skeletons: gray blocks with a soft shine while the API answers (see shared/skeleton.ts) */
+.wx-skeleton {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--mat-sys-surface-container-high) 25%,
+    var(--mat-sys-surface-container-highest) 37%,
+    var(--mat-sys-surface-container-high) 63%
+  );
+  background-size: 400% 100%;
+  animation: wx-shine 1.4s ease infinite;
+}
+
+@keyframes wx-shine {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wx-skeleton {
+    animation: none;
+  }
 }
 * {
   box-sizing: border-box;
@@ -75,13 +129,14 @@ button.danger {
   --mat-snack-bar-button-color: var(--wx-on-warning-bg);
 }
 
-/* Phones: the tables of .responsive-table become cards with "label: value" lines.
-   It is global because Material creates <thead>/<tbody> itself (outside the component styles). */
+/* Phones: each row of a .responsive-table becomes a card. The first column (description, name...) is the
+   title and the rest are "label: value" lines. Global because Material creates <thead>/<tbody> itself. */
 @media (max-width: 700px) {
   .responsive-table,
   .responsive-table tbody {
     display: block;
     width: 100%;
+    background: transparent;
   }
   .responsive-table thead {
     display: none;
@@ -89,24 +144,55 @@ button.danger {
   .responsive-table tr.mat-mdc-row {
     display: block;
     height: auto;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    margin: 0 0 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 16px;
+    background: var(--wx-card-bg);
+    box-shadow: var(--wx-card-shadow);
   }
   .responsive-table td.mat-mdc-cell {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 12px;
+    padding: 2px 0;
     border: none;
-    min-height: 32px;
+    min-height: 30px;
     text-align: right;
   }
   .responsive-table td.mat-mdc-cell[data-label]::before {
     content: attr(data-label);
-    font-weight: 500;
+    font: var(--mat-sys-body-small);
     text-align: left;
     color: var(--mat-sys-on-surface-variant);
   }
+  /* Title of the card */
+  .responsive-table td.mat-mdc-cell:first-child {
+    justify-content: flex-start;
+    margin-bottom: 4px;
+    text-align: left;
+    font: var(--mat-sys-title-medium);
+  }
+  .responsive-table td.mat-mdc-cell:first-child::before {
+    display: none;
+  }
   .responsive-table td.actions {
     justify-content: flex-end;
+    margin-top: 4px;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+    padding-top: 4px;
   }
+  .responsive-table tr.mat-mdc-row:has(td.empty) {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+}
+
+
+/* Card subtitles are secondary text: smaller and gray (with Inter they looked bigger than the title) */
+.mat-mdc-card-subtitle {
+  font: var(--mat-sys-body-small) !important;
+  color: var(--mat-sys-on-surface-variant) !important;
 }

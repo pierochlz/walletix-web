@@ -299,3 +299,18 @@ h3 {
   height: 18px;
   font-size: 18px;
 }
+
+/* Phones: the 4 summary figures in 2 compact columns (before, 4 tall cards one under another) */
+@media (max-width: 600px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .stat {
+    padding: 12px;
+  }
+  .stats .value {
+    font: var(--mat-sys-title-medium);
+    font-weight: 600;
+  }
+}

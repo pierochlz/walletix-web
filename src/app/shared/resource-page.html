@@ -32,7 +32,7 @@
     <p class="api-error" role="alert">{{ loadError() }}</p>
   }
 
-  <div class="table-wrap mat-elevation-z1">
+  <div class="table-wrap">
     <table mat-table class="responsive-table" [dataSource]="dataSource" matSort [attr.aria-label]="config().titleKey | t">
       @for (field of tableFields(); track field.key) {
         <ng-container [matColumnDef]="field.key">
@@ -93,7 +93,7 @@
       <tr class="mat-mdc-row" *matNoDataRow>
         <td class="mat-mdc-cell empty" [attr.colspan]="columns().length">
           @if (loading()) {
-            {{ 'app.loading' | t }}
+            <app-skeleton variant="rows" [count]="4" />
           } @else if (dataSource.filter) {
             {{ 'form.noResults' | t: { text: dataSource.filter } }}
           } @else {

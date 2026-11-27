@@ -22,7 +22,7 @@ h1 {
 }
 
 .tabs {
-  display: flex;
+  display: inline-flex; /* only as wide as its buttons */
   flex-wrap: wrap;
   margin-bottom: 12px;
   max-width: 100%;

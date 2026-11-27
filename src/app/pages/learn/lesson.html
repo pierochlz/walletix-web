@@ -8,6 +8,7 @@
 
   @if (loading()) {
     <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
+    <app-skeleton variant="list" [count]="4" />
   }
 
   @if (loadError()) {

@@ -483,4 +483,6 @@ export const ES_419: Record<string, string> = {
   'form.cents': 'Usa como máximo 2 decimales (céntimos)',
   'profile.emailChanged': 'Tu correo cambió. Inicia sesión con el nuevo correo.',
   'form.noResults': 'No hay resultados para «{text}».',
+  'dashboard.monthSaved': 'Este mes llevas {amount} a favor',
+  'dashboard.monthOverspent': 'Este mes gastaste {amount} más de lo que ingresaste',
 };

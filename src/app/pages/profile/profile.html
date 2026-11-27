@@ -32,6 +32,7 @@
 
 @if (loaded() < 3) {
   <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" class="loading" />
+  <app-skeleton variant="cards" [count]="6" />
 } @else {
   <!-- US36: my financial statistics -->
   <section aria-labelledby="stats-title">

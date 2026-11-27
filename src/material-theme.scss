@@ -4,6 +4,9 @@
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+// Walletix palette (generated with `ng generate @angular/material:theme-color`):
+// emerald #047857 (trust, money), blue #3B5BA9 as accent and slate grays instead of greenish grays
+@use './theme-colors' as walletix;
 
 html {
   height: 100%;
@@ -21,10 +24,17 @@ html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$green-palette,
-        tertiary: mat.$cyan-palette,
+        primary: walletix.$primary-palette,
+        tertiary: walletix.$tertiary-palette,
       ),
-      typography: Roboto,
+      // Inter: clear numbers and a modern look for a finance app (Roboto as fallback)
+      typography: (
+        plain-family: 'Inter, Roboto, sans-serif',
+        brand-family: 'Inter, Roboto, sans-serif',
+        bold-weight: 700,
+        medium-weight: 600,
+        regular-weight: 400,
+      ),
       density: 0,
     )
   );

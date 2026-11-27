@@ -28,6 +28,7 @@
 
   @if (!store.loaded()) {
     <mat-progress-bar mode="indeterminate" [attr.aria-label]="'app.loading' | t" />
+    <app-skeleton variant="list" [count]="5" />
   } @else if (store.error()) {
     <p class="api-error" role="alert">{{ 'app.connectionError' | t }}</p>
   } @else {

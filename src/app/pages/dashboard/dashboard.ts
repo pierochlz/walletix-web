@@ -25,6 +25,8 @@ import { BarChart, DonutChart, LineChart } from '../../shared/charts';
 import { ExpenseService, IncomeService, SavingGoalService } from '../../core/resource.services';
 import { LearnService } from '../../core/learn.service';
 import { LearnDetail } from '../../core/models';
+import { Skeleton } from '../../shared/skeleton';
+import { categoryIcon } from '../../core/category-icons';
 
 @Component({
   selector: 'app-dashboard',
@@ -45,7 +47,7 @@ import { LearnDetail } from '../../core/models';
     CurrencyPipe,
     DatePipe,
     DecimalPipe,
-    TranslatePipe,
+    TranslatePipe, Skeleton,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
@@ -102,6 +104,14 @@ export class Dashboard implements OnInit {
   // ---------- US08: views of the dashboard ----------
   readonly view = signal<'summary' | 'compare' | 'category'>('summary');
 
+  // Icon, color and name of the category of an expense (latest expenses list)
+  private readonly categoryLook = computed(
+    () => new Map(this.lookups.categories().map((c) => [c.idCategoria, { name: c.nombreCategoria, color: c.colorHexCategoria, icon: categoryIcon(c.urlIconoCategoria) }])),
+  );
+  lookOf(idCategoria: number): { name: string; color: string; icon: string } {
+    return this.categoryLook().get(idCategoria) ?? { name: '', color: 'var(--mat-sys-on-surface-variant)', icon: 'receipt_long' };
+  }
+
   private readonly categoryInfo = computed(
     () => new Map(this.lookups.categories().map((c) => [c.idCategoria, { name: c.nombreCategoria, color: c.colorHexCategoria }])),
   );
@@ -122,6 +132,10 @@ export class Dashboard implements OnInit {
   }
 
   // US06: ant expenses of this month
+  // Income minus expenses of the month: what the balance card says ("This month you saved S/ 120.00")
+  readonly monthNet = computed(() => this.monthIncome() - this.monthExpense());
+  readonly absMonthNet = computed(() => Math.abs(this.monthNet()));
+
   readonly monthAnt = computed(() => {
     const names = this.categoryInfo();
     const ants = this.expenses().filter((e) => e.fechaGasto.startsWith(this.thisMonth) && isAntExpense(e, names.get(e.idCategoria)?.name));
@@ -148,8 +162,8 @@ export class Dashboard implements OnInit {
   readonly avgExpense = computed(() => average(this.flows().map((f) => f.expense)));
   readonly flowLabels = computed(() => this.flows().map((f) => this.monthLabel(f.month)));
   readonly flowSeries = computed(() => [
-    { name: this.i18n.t('dashboard.incomes'), color: '#16a34a', values: this.flows().map((f) => f.income) },
-    { name: this.i18n.t('dashboard.expenses'), color: '#dc2626', values: this.flows().map((f) => f.expense) },
+    { name: this.i18n.t('dashboard.incomes'), color: 'var(--mat-sys-primary)', values: this.flows().map((f) => f.income) },
+    { name: this.i18n.t('dashboard.expenses'), color: 'var(--mat-sys-error)', values: this.flows().map((f) => f.expense) },
   ]);
 
   shortcut(months: number): void {

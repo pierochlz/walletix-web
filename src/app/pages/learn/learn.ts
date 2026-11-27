@@ -22,6 +22,7 @@ import { categoriesOf, categoryLabelKey, filterItems, learnIcon, LearnTab, setFa
 import { LearnService } from '../../core/learn.service';
 import { LearnItem } from '../../core/models';
 import { MessageDialog } from '../challenges/message-dialog';
+import { Skeleton } from '../../shared/skeleton';
 
 // "Consejos financieros" of the report (US31-US35): categories, search, tips, micro-lessons with quiz,
 // favorites and locked content with the condition to unlock it.
@@ -39,7 +40,7 @@ import { MessageDialog } from '../challenges/message-dialog';
     MatInputModule,
     MatProgressBarModule,
     MatTooltipModule,
-    TranslatePipe,
+    TranslatePipe, Skeleton,
   ],
   templateUrl: './learn.html',
   styleUrl: './learn.css',
