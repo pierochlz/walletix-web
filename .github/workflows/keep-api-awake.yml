@@ -3,14 +3,15 @@
 # This job calls GET /health every 10 minutes so the API stays awake.
 # GitHub only runs scheduled workflows from the default branch (main).
 #
-# OFF for now to save Render's free hours (750 per month; an awake API uses ~24 per day).
-# To turn it on (e.g. the day before the presentation): remove the "#" from the two
-# "schedule" lines below and push to main. To turn it off again, put the "#" back.
+# ON for the presentation week. Render's free plan gives 750 hours per month and this account has
+# only this service: even awake 24 hours a day it uses at most 744 hours in a month of 31 days.
+# The repository is public, so GitHub does not limit the minutes of these runs.
+# To turn it off, put a "#" in front of the two "schedule" lines below and push to main.
 name: Keep API awake
 
 on:
-  # schedule:
-  #   - cron: '*/10 * * * *' # every 10 minutes (UTC); GitHub may delay it a few minutes
+  schedule:
+    - cron: '*/10 * * * *' # every 10 minutes (UTC); GitHub may delay it a few minutes
   workflow_dispatch: # can also be run by hand from the Actions tab (wakes the API once)
 
 permissions: {} # it only makes an HTTP request, it does not need access to the repository
