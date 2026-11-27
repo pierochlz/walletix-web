@@ -1,4 +1,9 @@
-<h1 class="hello">{{ 'dashboard.hello' | t: { name: auth.user()?.nombreUsuario ?? '' } }}</h1>
+<!-- Until GET /usuarios/yo answers there is no name or balance: gray placeholders instead of "Hola," and "S/ 0.00" -->
+@if (auth.user(); as me) {
+  <h1 class="hello">{{ 'dashboard.hello' | t: { name: me.nombreUsuario } }}</h1>
+} @else {
+  <h1 class="hello"><span class="sr-only">{{ 'app.loading' | t }}</span><span class="wx-skeleton hello-skeleton" aria-hidden="true"></span></h1>
+}
 
 <!-- US08: views of the dashboard -->
 <mat-button-toggle-group class="views" [value]="view()" (change)="view.set($event.value)" [attr.aria-label]="'dashboard.views' | t" hideSingleSelectionIndicator>
@@ -45,7 +50,11 @@
       <mat-icon aria-hidden="true">account_balance_wallet</mat-icon>
       <p class="hero-label">{{ 'dashboard.balance' | t }}</p>
     </div>
-    <p class="hero-value amount">{{ auth.user()?.saldoActualUsuario ?? 0 | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale() }}</p>
+    @if (auth.user(); as me) {
+      <p class="hero-value amount">{{ me.saldoActualUsuario | currency: 'PEN' : 'S/ ' : '1.2-2' : i18n.locale() }}</p>
+    } @else {
+      <p class="hero-value"><span class="sr-only">{{ 'app.loading' | t }}</span><span class="wx-skeleton hero-skeleton" aria-hidden="true"></span></p>
+    }
     @if (expensesLoaded() && incomesLoaded() && !monthIncome() && !monthExpense()) {
       <p class="hero-note">{{ 'dashboard.monthEmpty' | t }}</p>
     } @else if (expensesLoaded() && incomesLoaded()) {
@@ -77,7 +86,11 @@
     <mat-card appearance="outlined" class="stat points">
       <span class="stat-icon" aria-hidden="true"><mat-icon>emoji_events</mat-icon></span>
       <p class="label">{{ 'dashboard.points' | t }}</p>
-      <p class="value">{{ auth.user()?.puntosGamificacionUsuario ?? 0 }}</p>
+      @if (auth.user(); as me) {
+        <p class="value">{{ me.puntosGamificacionUsuario }}</p>
+      } @else {
+        <p class="value"><span class="sr-only">{{ 'app.loading' | t }}</span><span class="wx-skeleton value-skeleton" aria-hidden="true"></span></p>
+      }
       <a routerLink="/challenges" class="stat-link">{{ 'dashboard.seeChallenges' | t }}</a>
     </mat-card>
   </div>

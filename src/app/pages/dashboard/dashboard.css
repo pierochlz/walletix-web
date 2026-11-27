@@ -461,3 +461,31 @@ h2 {
   font: var(--mat-sys-label-medium);
   color: var(--mat-sys-primary);
 }
+
+/* Placeholders while the user (name, balance, points) is loading */
+.hello-skeleton {
+  width: 220px;
+  height: 28px;
+}
+
+.hero-skeleton {
+  width: 70%;
+  height: 40px;
+  border-radius: 10px;
+  opacity: 0.35;
+}
+
+.value-skeleton {
+  width: 60px;
+  height: 22px;
+  margin-top: 4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

@@ -85,4 +85,29 @@ describe('Dashboard balance card', () => {
     const page = render([], [], [othersBudget]);
     expect(page.querySelectorAll('.fs-steps li.done').length).toBe(0);
   });
+
+  // Found in production: while the API was waking up the card said "S/ 0.00" and the greeting "Hello,"
+  it('while the user is loading it shows placeholders, not a balance of S/ 0.00 or a greeting without a name', () => {
+    TestBed.configureTestingModule({
+      imports: [Dashboard],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    });
+    TestBed.inject(AuthService).user.set(null);
+    const fixture = TestBed.createComponent(Dashboard);
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('.hero-skeleton')).not.toBeNull();
+    expect(page.querySelector('.hello-skeleton')).not.toBeNull();
+    expect(page.querySelector('.overview')?.textContent).not.toContain('0.00 ');
+    expect(page.querySelector('.hero')?.textContent).not.toMatch(/S\/\s*0\.00/);
+    expect(page.querySelector('h1')?.textContent?.trim()).not.toMatch(/^Hello,?$/);
+    TestBed.inject(HttpTestingController)
+      .match(() => true)
+      .forEach((req) =>
+        req.request.url.includes('/retos/resumen') ? req.flush({ activos: [], historial: [] })
+          : req.request.url.includes('tip-del-dia') ? req.flush(null)
+          : req.request.url.startsWith(api) ? req.flush([])
+          : req.flush('down', { status: 503, statusText: 'Unavailable' }),
+      );
+  });
 });
